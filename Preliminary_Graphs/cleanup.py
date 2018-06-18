@@ -47,7 +47,6 @@ def cleaner():
 
                     for col in row:
                         col = col.split(': ')
-
                         col = col[1]
                         my_list.append(col)
 
