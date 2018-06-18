@@ -13,7 +13,7 @@ library("cowplot")
 #==============================================
 # Load the data
 #`500_cleaned_data` <- read.csv("C:/Users/Kevin/Downloads/500_cleaned_data (2).csv", quote="'")
-`500_cleaned_data` <- read.csv("500_cleaned_data.csv", quote="'")
+`500_cleaned_data` <- read.csv("500_xx00_cleaned_data.csv", quote="'")
 
 # Re-shape data to make column for variable TE type/family and corresponding value for TE density
 Reshaped<-melt(data = `500_cleaned_data`[-1],id=c("chromosome","maker_name","start","stop","prox_left","prox_right","they_are_inside","length"))
