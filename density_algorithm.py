@@ -224,10 +224,10 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
                         elem.Copia_left += left_density
                         elem.Copia_intra += intra_density
                         elem.Copia_right += right_density
-                    elif t_family == 'None':
-                        elem.None_left += left_density
-                        elem.None_intra += intra_density
-                        elem.None_right += right_density
+                    elif t_family == 'LINE':
+                        elem.LINE_fam_left += left_density
+                        elem.LINE_fam_intra += intra_density
+                        elem.LINE_fam_right += right_density
                     elif t_family == 'hAT':
                         elem.hAT_left += left_density
                         elem.hAT_intra += intra_density
@@ -245,9 +245,68 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
         for elem in genes:
             print(elem.__dict__,file=f)
         f.close()
-        window += 500
+        window += increment
 
-#------------------------------------------------------------------------------------------
+        reset(genes)
+#===============================================
+# Reset the Deque for the next window
+#===============================================
+def reset(deque):
+    """Resets the attributes altered during the course of the algorithm for use in the next window."""
+    for elem in deque
+
+        elem.DNA_left = 0
+        elem.DNA_intra = 0
+        elem.DNA_right = 0
+
+        elem.LTR_left = 0
+        elem.LTR_intra = 0
+        elem.LTR_right = 0
+
+        elem.LINE_left = 0
+        elem.LINE_intra = 0
+        elem.LINE_right  = 0
+
+        elem.Unknown_left = 0
+        elem.Unknown_intra = 0
+        elem.Unknown_right = 0
+
+
+        elem.MULE_left = 0
+        elem.MULE_intra = 0
+        elem.MULE_right = 0
+
+        elem.Gypsy_left = 0
+        elem.Gypsy_intra = 0
+        elem.Gypsy_right = 0
+
+        elem.Unknown_fam_left = 0
+        elem.Unknown_fam_intra = 0
+        elem.Unknown_fam_right = 0
+
+        elem.CMC_EnSpm_left = 0
+        elem.CMC_EnSpm_intra = 0
+        elem.CMC_EnSpm_right = 0
+
+        elem.Copia_left = 0
+        elem.Copia_intra = 0
+        elem.Copia_right = 0
+
+        elem.LINE_fam_left = 0
+        elem.LINE_fam_intra = 0
+        elem.LINE_fam_right = 0
+
+        elem.hAT_left = 0
+        elem.hAT_intra = 0
+        elem.hAT_right  = 0
+
+        elem.PIF_Harbinger_left  = 0
+        elem.PIF_Harbinger_intra  = 0
+        elem.PIF_Harbinger_right  = 0
+
+#===================================================================================
+# Here are my algorithm's sorting functions
+#===================================================================================
 def left_outside_from_window(window,left_window_stop,left_window_start,left_density):
     """TE comes from outside the window, and ends within the gene, ths part deals with the window to the gene start. Similar to right_outside_from_window."""
     outside_chunk = left_window_stop - left_window_start  + 1
@@ -302,8 +361,6 @@ def R_prox_check(right_window_start,t_start,prox_right):
         prox_right = distance
     return prox_right
 
-
-
-
+#===================================================================================
 if __name__ == '__main__':
     pass

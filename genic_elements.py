@@ -85,9 +85,9 @@ class Gene(Genic_Element):
         self.Copia_intra= 0
         self.Copia_right = 0
 
-        self.None_left = 0
-        self.None_intra= 0
-        self.None_right = 0
+        self.LINE_fam_left = 0
+        self.LINE_fam_intra= 0
+        self.LINE_fam_right = 0
 
         self.hAT_left = 0
         self.hAT_intra= 0
