@@ -69,8 +69,8 @@ def whitelist_fam(family):
     U = 'Unknown'
     N = 'None'
     master_fam =  {'Uknown':U, 'MuDr':'MULE', 'MULE-MuDR':'MULE', 'Pao':U, 'Caulimovirus':U,
-                   'hAT-Tag1':'hAT', 'hAT-Tip100':'hAT', 'hAT-Charlie':'hAT', 'Helitron':U, 'unknown':U,                                       'Maverick':U, 'Harbinger':'PIF-Harbinger', 'TcMar-Pogo':U, 'CR1':N, 'hAT-Ac':'hAT',
-                   'L2':N, 'L1':N, 'Jockey':N, 'MuLE-MuDR':'MULE', 'MuDR':'MULE', 'Mutator':'MULE', 'Micro_like':U}
+                   'hAT-Tag1':'hAT', 'hAT-Tip100':'hAT', 'hAT-Charlie':'hAT', 'Helitron':U, 'unknown':U,                                       'Maverick':U, 'Harbinger':'PIF-Harbinger', 'TcMar-Pogo':U, 'CR1':'LINE', 'hAT-Ac':'hAT',
+                   'L2':'LINE', 'L1':'LINE', 'Jockey':'LINE', 'MuLE-MuDR':'MULE', 'MuDR':'MULE', 'Mutator':'MULE', 'Micro_like':U}
     for key,val in master_fam.items():
         if family == key:
             family = val
