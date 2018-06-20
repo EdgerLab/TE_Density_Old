@@ -143,25 +143,6 @@ def reader(my_deque):
     pass
 
 if __name__ == '__main__':
-    #p = Pool()
-    #p.map(run_all,['gtf_chunks_aa.gtf','gtf_chunks_ab.gtf','gtf_chunks_ac.gtf','gtf_chunks_ad.gtf','gtf_chunks_ae.gtf','gtf_chunks_af.gtf'])
-    #for item in my_inputs:
-        #p = Process(target=run_all, args=(item,))
-        #p.start()
-    #for item in my_inputs:
-        #gtf_inputfile = item
-        #te_handler()
-        #gene_handler()
-        #gene_handler_2(gtf_inputfile)
-
-        #p = Process(target=get_densities, args=(genes,transposons,500,500,10000,gtf_inputfile,))
-        #p = Process(target=run_all,args=(gtf_inputfile,))
-        #p.start()
-
-    #my_inputs = ['gtf_chunks_aa.gtf','gtf_chunks_ab.gtf','gtf_chunks_ac.gtf','gtf_chunks_ad.gtf','gtf_chunks_ae.gtf','gtf_chunks_af.gtf']
-    #my_inputs = ['xx00','xx01','xx02','xx03','xx04','xx05','xx06']
-    # for some reason it isn't working on anything past the xx00
-    #my_inputs = ['xx01','xx02','xx03','xx04','xx05','xx06']
     my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
                 ['xx06','mRNA06']]
     p_list = []

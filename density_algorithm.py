@@ -253,7 +253,7 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
 #===============================================
 def reset(deque):
     """Resets the attributes altered during the course of the algorithm for use in the next window."""
-    for elem in deque
+    for elem in deque:
 
         elem.DNA_left = 0
         elem.DNA_intra = 0
@@ -303,6 +303,8 @@ def reset(deque):
         elem.PIF_Harbinger_left  = 0
         elem.PIF_Harbinger_intra  = 0
         elem.PIF_Harbinger_right  = 0
+
+        elem.they_are_inside = 0
 
 #===================================================================================
 # Here are my algorithm's sorting functions
