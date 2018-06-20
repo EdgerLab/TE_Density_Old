@@ -9,11 +9,13 @@ def cleaner():
     """This function runs a script that fixes the output of my algorithm to be in a better csv format
     It deletes the input files at the end though, so make sure you have a copy. I do this because it breaks
     if there are still input files and you try to run again."""
+
     extension = 'csv'
     os.chdir(os.getcwd())
     result = [i for i in glob.glob('*.{}'.format(extension))]
 
     for item in result:
+        print(item)
         moving_filename = item.split('_d')[0] + '_' + updated_data # creates an appropriate filename for the output
         try:
             os.remove(moving_filename)

@@ -13,7 +13,10 @@ library("cowplot")
 #==============================================
 # Load the data
 #`500_cleaned_data` <- read.csv("C:/Users/Kevin/Downloads/500_cleaned_data (2).csv", quote="'")
-all_data <- list.files(path=getwd(), pattern="500_*")
+#all_data <- list.files(path=getwd(), pattern="500_*")
+
+all_data <- list.files(path=getwd(), pattern="*cleaned_data.csv")
+
 all_data_df <- do.call(rbind,lapply(all_data,function(x){read.csv(x,quote="'")})) 
 
 #`500_cleaned_data` <- read.csv("500_xx00_cleaned_data.csv", quote="'")
