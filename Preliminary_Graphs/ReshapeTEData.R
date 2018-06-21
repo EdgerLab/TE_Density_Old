@@ -41,7 +41,7 @@ TE.Density.Means$Location <- factor(TE.Density.Means$Location, levels=c("left", 
 TE.Density.Means[TE.Density.Means$Location=="left",]$windowSize<-TE.Density.Means[TE.Density.Means$Location=="left",]$windowSize*-1
 
 # Rename the middle column to have a capital I
-TE.Density.Means[TE.Density.Means$Location=="intra",]$windowSize<-"Intra_Gene"
+TE.Density.Means[TE.Density.Means$Location=="intra",]$windowSize<-"0"
 #TE.Density.Means$windowSize <- factor(levels=c(500,1000,1500))
 #TE.Density.Means$windowSize<-as.factor(TE.Density.Means$windowSize)
 #TE.Density.Means$windowSize <- factor(TE.Density.Means$windowSize, levels=c(-1500,-1000,-500,500, 1000, 1500,"Intra_Gene"))
@@ -73,14 +73,21 @@ colnames(TE.Family.Density.Means)[2]<-"TE_Family"
 #==============================================
 # Plot
 # TE type
-ggplot(TE.Type.Density.Means,y=avg,aes(group=TE_type,colour=TE_type))+geom_point( data=TE.Type.Density.Means,x=as.character(windowSize),aes(size=5)) + geom_line(data=TE.Family.Density.Means,x=as.numeric(windowSize))+
+ggplot(TE.Type.Density.Means,aes(x=as.numeric(windowSize),y=avg,group=TE_type,colour=TE_type))+geom_point(aes(size=5)) + 
+geom_line()+
 scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") + 
-ylim(0,1) + ylab('TE Density') + xlab('Window Size')
+ylim(0,1) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(breaks = c(-1500,-1000,-500,0,500,1000,1500))
+
 # TE Family
-#ggplot(TE.Family.Density.Means)+geom_point(aes(x=windowSize,y=avg,group=TE_Family,colour=TE_Family,size=5))+scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") + 
-#scale_y_continuous(name='TE Density %',breaks=seq(0,1, by=0.1),limits=c(0,0.5)) + geom_line() +
-#xlab('Window Size')
-#ylim(0,1) + ylab('TE Density') + xlab('Window Size')
+ggplot(TE.Family.Density.Means,aes(x=as.numeric(windowSize),y=avg,group=TE_Family,colour=TE_Family))+geom_point(aes(size=5)) + 
+geom_line()+
+scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") + 
+ylim(0,1) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(breaks = c(-1500,-1000,-500,0,500,1000,1500))
+#==============================================
+
+
+
+
 
 
 #==============================================
