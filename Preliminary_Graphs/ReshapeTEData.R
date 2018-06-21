@@ -12,8 +12,8 @@ library("reshape2")
 library("cowplot")
 #==========================================================================================================
 # Load the data
-all_data <- list.files(path=getwd(), pattern="*cleaned_data.csv")
-all_data_df <- do.call(rbind,lapply(all_data,function(x){read.csv(x,quote="'")})) 
+all_data <- list.files(path=getwd(), pattern="*cleaned_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
+all_data_df <- do.call(rbind,lapply(all_data,function(x){read.csv(x,quote="'")}))  #put all the data into one dataframe
 
 #`500_cleaned_data` <- read.csv("500_xx00_cleaned_data.csv", quote="'")
 #==========================================================================================================
@@ -38,17 +38,32 @@ colScale <- scale_fill_manual(name="", values=myColors)
 # Reorder Location factors so that plot shows left, intra, right
 TE.Density.Means$Location <- factor(TE.Density.Means$Location, levels=c("left", "intra", "right"))
 
+TE.Density.Means[TE.Density.Means$Location=="left",]$windowSize<-TE.Density.Means[TE.Density.Means$Location=="left",]$windowSize*-1
+
 # Rename the middle column to have a capital I
 TE.Density.Means[TE.Density.Means$Location=="intra",]$windowSize<-"Intra_Gene"
-#TE.Density.Means$Location <- factor(TE.Density.Means$windowSize, levels=c("1500", "1000", "500"))
+#TE.Density.Means$windowSize <- factor(levels=c(500,1000,1500))
+#TE.Density.Means$windowSize<-as.factor(TE.Density.Means$windowSize)
+#TE.Density.Means$windowSize <- factor(TE.Density.Means$windowSize, levels=c(-1500,-1000,-500,500, 1000, 1500,"Intra_Gene"))
+#TE.Density.Means[TE.Density.Means$Location=="intra"$windowSize]$levels=c(1500,1000,500)
 
+# Make columns
+#TE.Density.Means$Line_Values <- '' # made a empty line
+#TE.Density.Means[TE.Density.Means$windowSize==500,]$Line_Values <- 1
+#TE.Density.Means[TE.Density.Means$windowSize==1000,]$Line_Values <- 2
+#TE.Density.Means[TE.Density.Means$windowSize==1500,]$Line_Values <- 3 
+#TE.Density.Means[TE.Density.Means$windowSize=='Intra_Gene',]$Line_Values <- 0 
 
+#TE.Density.Means[TE.Density.Means$windowSize==-500,]$Line_Values <- 1
+#TE.Density.Means[TE.Density.Means$windowSize==-1000,]$Line_Values <- 2
+#TE.Density.Means[TE.Density.Means$windowSize==-1500,]$Line_Values <- 3 
+#TE.Density.Means[TE.Density.Means$windowSize=='Intra_Gene',]$Line_Values <- 0 
 
 # Subset to look only at TE types
 TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="LTR"|TE.Density.Means$TE_type=="Unknown",]
 
 #Subset to look only at TE families and rename column to TE_family
-# !!!!!!!!!!!!1
+# !!!!!!!!!!!!
 
 # Will need to be renamed in a spot once the LINE fam is added
 TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="None"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
@@ -58,13 +73,13 @@ colnames(TE.Family.Density.Means)[2]<-"TE_Family"
 #==============================================
 # Plot
 # TE type
-ggplot(TE.Type.Density.Means)+geom_point(aes(x=as.character(windowSize),y=avg,colour=TE_type,size=5))+scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") + 
+ggplot(TE.Type.Density.Means,y=avg,aes(group=TE_type,colour=TE_type))+geom_point( data=TE.Type.Density.Means,x=as.character(windowSize),aes(size=5)) + geom_line(data=TE.Family.Density.Means,x=as.numeric(windowSize))+
+scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") + 
 ylim(0,1) + ylab('TE Density') + xlab('Window Size')
-
 # TE Family
-ggplot(TE.Family.Density.Means)+geom_point(aes(x=as.character(windowSize),y=avg,colour=TE_Family,size=5))+scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") + 
-scale_y_continuous(name='TE Density %',breaks=seq(0,1, by=0.1),limits=c(0,0.5)) +
-xlab('Window Size')
+#ggplot(TE.Family.Density.Means)+geom_point(aes(x=windowSize,y=avg,group=TE_Family,colour=TE_Family,size=5))+scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") + 
+#scale_y_continuous(name='TE Density %',breaks=seq(0,1, by=0.1),limits=c(0,0.5)) + geom_line() +
+#xlab('Window Size')
 #ylim(0,1) + ylab('TE Density') + xlab('Window Size')
 
 
