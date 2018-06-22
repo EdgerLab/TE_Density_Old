@@ -71,7 +71,8 @@ def count_iterator(countfiles):
         count = count/len(countfiles) # average the counts
         elem.count = count
 
-
+def write_structure():
+    pass
 
 
 
@@ -115,11 +116,6 @@ class Gene(object):
 
 #===============================================================
 if __name__ == '__main__':
-    #run_all('xx00','mRNA00')
-
-
-
-
     my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
                 ['xx06','mRNA06']]
     p_list = []
