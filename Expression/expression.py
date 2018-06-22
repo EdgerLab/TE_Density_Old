@@ -8,8 +8,8 @@ from collections import deque
 #sys.path.insert(0, '/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/') # specify path for import
 #import genic_elements
 genes = deque() # use a deque structure for containing my elements
+count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
 #====================================
-
 def gene_handler(mRNA_inputfile):
     """gene_handler() adds the genes into the 'genes' deque. Important to note that exon lengths come from elsewhere."""
     # This will have every gene because it is coming from the mRNA.bed file which has everything.
@@ -21,7 +21,7 @@ def gene_handler(mRNA_inputfile):
             stop = row[2]
             maker_name = row[3].strip('\n')
             genes.append(Gene(maker_name,chromosome,start,stop))
-
+            #Gene(maker_name,chromosome,start,stop)
 
 def gene_handler_2(gtf_inputfile):
     """Use a simple dictionary to get the exon lengths calculated."""
@@ -51,6 +51,27 @@ def gene_handler_2(gtf_inputfile):
         except KeyError:
             continue
 
+def count_iterator(countfiles):
+    a_dict = {}
+    for countfile in countfiles:
+        with open(countfile, 'r') as f_in:
+            for row in f_in:
+                row = re.split('\t+',row)
+                key = row[0]
+                count = int(row[1])
+
+                if key not in a_dict:
+                    a_dict[key] = count
+                elif key in a_dict:
+                    a_dict[key] += count
+
+    for elem in genes:
+        name = elem.getName()
+        count = a_dict[name]
+        count = count/len(countfiles) # average the counts
+        elem.count = count
+
+
 
 
 
@@ -67,6 +88,7 @@ def run_all(gtf_inputfile,mRNA_inputfile):
     info()
     gene_handler(mRNA_inputfile)
     gene_handler_2(gtf_inputfile)
+    count_iterator(count_list)
 #=============================================================
 class Gene(object):
     def __init__(self, maker_name, chromosome, start, stop ):
@@ -74,6 +96,7 @@ class Gene(object):
         self.chromosome = chromosome
         self.start = int(start)
         self.stop = int(stop)
+        self.count = 0
 
     def getName(self):
         return self.name
