@@ -1,21 +1,18 @@
 # By Scott Teresi
 # The below script calculates TPM for a strawberry
+# The code first has to create the data structure for the genes
 #====================================
 import sys, re, os, time, csv
 from multiprocessing import Process
 from collections import deque
-sys.path.insert(0, '/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/') # specify path for import
-import genic_elements
-genes = deque()
+#sys.path.insert(0, '/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/') # specify path for import
+#import genic_elements
+genes = deque() # use a deque structure for containing my elements
 #====================================
 
 def gene_handler(mRNA_inputfile):
     """gene_handler() adds the genes into the 'genes' deque. Important to note that exon lengths come from elsewhere."""
     # This will have every gene because it is coming from the mRNA.bed file which has everything.
-    # Oh so the problem is that some of the gene elements don't have a length. Because there is a mismatch
-    # mismatch between the mRNA and the gtf partitions
-
-    number = 1
     with open(mRNA_inputfile, 'r') as f_in:
         for row in f_in:
             row = re.split('\t+', row)
@@ -23,10 +20,12 @@ def gene_handler(mRNA_inputfile):
             start = row[1]
             stop = row[2]
             maker_name = row[3].strip('\n')
-            genes.append(Gene(number,chromosome,start,stop,maker_name))
-            number +=1
+            genes.append(Gene(maker_name,chromosome,start,stop))
+
 
 def gene_handler_2(gtf_inputfile):
+    """Use a simple dictionary to get the exon lengths calculated."""
+    # Takes a gtf file as an input and iterates over to aggregate the correct exon lengths.
     a_dict = {}
     with open(gtf_inputfile,'r') as f_in:
         for row in f_in:
@@ -46,11 +45,16 @@ def gene_handler_2(gtf_inputfile):
                     raise ValueError("I don't know")
     for elem in genes:
         try:
-            name = elem.getMaker_Name()
+            name = elem.getName()
             length = int(a_dict[name])
             elem.length = length
         except KeyError:
             continue
+
+
+
+
+
 
 def info():
     print('module name:', __name__)
@@ -60,20 +64,36 @@ def info():
     print()
 
 def run_all(gtf_inputfile,mRNA_inputfile):
+    info()
     gene_handler(mRNA_inputfile)
     gene_handler_2(gtf_inputfile)
+#=============================================================
+class Gene(object):
+    def __init__(self, maker_name, chromosome, start, stop ):
+        self.name = maker_name
+        self.chromosome = chromosome
+        self.start = int(start)
+        self.stop = int(stop)
 
-    #if gtf_inputfile == 'xx02':
-        #for elem in genes:
-            #print(elem.__dict__)
-            #print(elem.length)
-    info()
+    def getName(self):
+        return self.name
 
+    def getChromosome(self):
+        return self.chromosome
+
+    def getStart(self):
+        return self.start
+
+    def getStop(self):
+        return self.stop
+
+    def getLength(self):
+        return self.length
 
 #===============================================================
 if __name__ == '__main__':
-    #run_all('xx00','mRNA00')
-    print('Yeah')
+    run_all('xx00','mRNA00')
+
 
 
 
