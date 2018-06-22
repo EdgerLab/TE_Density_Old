@@ -115,20 +115,20 @@ class Gene(object):
 
 #===============================================================
 if __name__ == '__main__':
-    run_all('xx00','mRNA00')
+    #run_all('xx00','mRNA00')
 
 
 
 
-    #my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
-                #['xx06','mRNA06']]
-    #p_list = []
-    #for f_name in my_inputs:
-        #p = Process(target=run_all, args=(f_name[0],f_name[1],))
-        #p.start()
-        #p_list.append(p)
+    my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
+                ['xx06','mRNA06']]
+    p_list = []
+    for f_name in my_inputs:
+        p = Process(target=run_all, args=(f_name[0],f_name[1],))
+        p.start()
+        p_list.append(p)
 
-    #for p in p_list:
-        #current_pid = p.pid
-        #p.join(None)
-        #print("pid '{}' joined!".format(current_pid))
+    for p in p_list:
+        current_pid = p.pid
+        p.join(None)
+        print("pid '{}' joined!".format(current_pid))
