@@ -3,6 +3,7 @@
 from genic_elements import *
 from collections import deque, defaultdict
 import os
+import csv
 #------------------------------------------------------------------
 
 def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
@@ -237,15 +238,30 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
                         elem.PIF_Harbinger_intra += intra_density
                         elem.PIF_Harbinger_right += right_density
 
-
         for item in file_list:
             if gtf_inputfile == item:
                 moving_filename = str(window) + '_' + item + '_density_data.csv'
-        f = open(moving_filename,'w+')
-        for elem in genes:
-            print(elem.__dict__,file=f)
-        f.close()
+
+                with open(moving_filename, 'w') as f_out:
+                    fieldnames = ['maker_name', 'chromosome', 'start', 'stop', 'length',
+                    'DNA_left', 'DNA_intra', 'DNA_right', 'LTR_left', 'LTR_intra', 'LTR_right',
+                    'Unknown_left', 'Unknown_intra', 'Unknown_right', 'LINE_left', 'LINE_intra', 'LINE_right',
+                    'MULE_left', 'MULE_intra', 'MULE_right', 'Gypsy_left', 'Gypsy_intra', 'Gypsy_right',
+                    'Unknown_fam_left','Unknown_fam_intra', 'Unknown_fam_right', 'CMC_EnSpm_left',
+                    'CMC_EnSpm_intra', 'CMC_EnSpm_right', 'Copia_left','Copia_intra','Copia_right',
+                    'LINE_fam_left','LINE_fam_intra','LINE_fam_right','hAT_left','hAT_intra','hAT_right',
+                    'PIF_Harbinger_left','PIF_Harbinger_intra','PIF_Harbinger_right','prox_left','prox_right',
+                    'they_are_inside']# Supply the header to the file, this also orders your output columns in the supplied order. Must have all attributes listed.
+                    # You will need to edit the fieldnames to match your data
+
+                    f_out = csv.DictWriter(f_out,fieldnames=fieldnames) # use the DictWriter module and declare your fieldnames
+                    f_out.writeheader() # write the header
+                    for elem in genes: # iterate over your structure (genes) and for every element write a row
+                        f_out.writerow(elem.__dict__) # elem.__dict__ is how we access all of the attributes of an instance
         window += increment
+
+
+
 
         reset(genes)
 #===============================================
