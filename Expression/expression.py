@@ -9,6 +9,7 @@ from collections import deque
 #import genic_elements
 genes = deque() # use a deque structure for containing my elements
 count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
+count_output = 'expression_out.csv'
 #====================================
 def gene_handler(mRNA_inputfile):
     """gene_handler() adds the genes into the 'genes' deque. Important to note that exon lengths come from elsewhere."""
@@ -65,14 +66,27 @@ def count_iterator(countfiles):
                 elif key in a_dict:
                     a_dict[key] += count
 
-    for elem in genes:
-        name = elem.getName()
-        count = a_dict[name]
-        count = count/len(countfiles) # average the counts
-        elem.count = count
+    for countfile in countfiles:
+        for elem in genes:
+            name = elem.getName()
+            count = a_dict[name]
+            #count = count/len(countfiles) # average the counts
+
+            #elem.count = count
+
+        #count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
+
+
+    return genes
+
 
 def write_structure():
-    pass
+    with open(count_output, 'w') as f_out:
+        fieldnames = ['name', 'chromosome', 'start', 'stop', 'length', 'count']
+        f_out = csv.DictWriter(f_out,fieldnames=fieldnames)
+        f_out.writeheader()
+        for elem in genes:
+            f_out.writerow(elem.__dict__)
 
 
 
@@ -90,6 +104,8 @@ def run_all(gtf_inputfile,mRNA_inputfile):
     gene_handler(mRNA_inputfile)
     gene_handler_2(gtf_inputfile)
     count_iterator(count_list)
+    #write_structure()
+
 #=============================================================
 class Gene(object):
     def __init__(self, maker_name, chromosome, start, stop ):
@@ -97,7 +113,14 @@ class Gene(object):
         self.chromosome = chromosome
         self.start = int(start)
         self.stop = int(stop)
-        self.count = 0
+
+        #count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
+        self.count_1 = 0
+        self.count_2 = 0
+        self.count_3 = 0
+        self.count_4 = 0
+        self.count_5 = 0
+        self.count_6 = 0
 
     def getName(self):
         return self.name
@@ -116,15 +139,22 @@ class Gene(object):
 
 #===============================================================
 if __name__ == '__main__':
-    my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
-                ['xx06','mRNA06']]
-    p_list = []
-    for f_name in my_inputs:
-        p = Process(target=run_all, args=(f_name[0],f_name[1],))
-        p.start()
-        p_list.append(p)
+    #run_all('camarosa_gtf_data.gtf','mRNA.bed')
+    run_all('xx00','mRNA00')
 
-    for p in p_list:
-        current_pid = p.pid
-        p.join(None)
-        print("pid '{}' joined!".format(current_pid))
+
+
+    #my_inputs = [['xx00','mRNA00']]#,['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
+                #['xx06','mRNA06']]
+    #p_list = []
+    #for f_name in my_inputs:
+        #p = Process(target=run_all, args=(f_name[0],f_name[1],))
+        #p.start()
+        #p_list.append(p)
+
+    #for p in p_list:
+        #current_pid = p.pid
+        #p.join(None)
+        #print("pid '{}' joined!".format(current_pid))
+
+
