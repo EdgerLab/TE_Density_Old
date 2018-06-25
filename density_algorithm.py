@@ -251,7 +251,7 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
                     'CMC_EnSpm_intra', 'CMC_EnSpm_right', 'Copia_left','Copia_intra','Copia_right',
                     'LINE_fam_left','LINE_fam_intra','LINE_fam_right','hAT_left','hAT_intra','hAT_right',
                     'PIF_Harbinger_left','PIF_Harbinger_intra','PIF_Harbinger_right','prox_left','prox_right',
-                    'they_are_inside']# Supply the header to the file, this also orders your output columns in the supplied order. Must have all attributes listed.
+                    'they_are_inside','number']# Supply the header to the file, this also orders your output columns in the supplied order. Must have all attributes listed.
                     # You will need to edit the fieldnames to match your data
 
                     f_out = csv.DictWriter(f_out,fieldnames=fieldnames) # use the DictWriter module and declare your fieldnames
