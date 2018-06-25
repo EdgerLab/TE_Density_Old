@@ -9,6 +9,7 @@ from collections import deque
 #import genic_elements
 genes = deque() # use a deque structure for containing my elements
 count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
+count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1','ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5']
 count_output = 'expression_out.csv'
 #==================================================================
 
@@ -54,38 +55,35 @@ def gene_handler_2(gtf_inputfile):
             continue
 
 def count_iterator(countfiles):
-    a_dict = {}
-    for countfile in countfiles:
-        with open(countfile, 'r') as f_in:
-            total_count = 0
-            for row in f_in:
-                row = re.split('\t+',row)
-                key = row[0]
-                count = int(row[1])
+    for elem in genes:
+        for countfile in countfiles:
+            with open(countfile, 'r') as f_in:
+                total_count = 0
+                for row in f_in:
+                    row = re.split('\t+',row)
+                    gene = row[0]
+                    count = int(row[1])
 
-                if key not in a_dict:
-                    a_dict[key] = count
-                elif key in a_dict:
-                    a_dict[key] += count
-                total_count += count
+                    if countfile == countfiles[0]:
+                        elem.count_0 = count
+                    elif countfile == countfiles[1]:
+                        elem.count_1 = count
+                    elif countfile == countfiles[2]:
+                        elem.count_2 = count
+                    elif countfile == countfiles[3]:
+                        elem.count_3 = count
+                    elif countfile == countfiles[4]:
+                        elem.count_4 = count
+                    elif countfile == countfiles[5]:
+                        elem.count_5 = count
+                    total_count += count
+                need dcit
 
     for countfile in countfiles:
         for elem in genes:
             name = elem.getName()
             count = a_dict[name]
 
-            if countfile == countfiles[0]:
-                elem.count_0 = count
-            elif countfile == countfiles[1]:
-                elem.count_1 = count
-            elif countfile == countfiles[2]:
-                elem.count_2 = count
-            elif countfile == countfiles[3]:
-                elem.count_3 = count
-            elif countfile == countfiles[4]:
-                elem.count_4 = count
-            elif countfile == countfiles[5]:
-                elem.count_5 = count
 
     TPM(total_count)
     #FPKM(total_count)
