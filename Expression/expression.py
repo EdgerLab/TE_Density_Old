@@ -1,7 +1,7 @@
 # By Scott Teresi
 # The below script calculates TPM for a strawberry
 # The code first has to create the data structure for the genes
-#====================================
+#==================================================================
 import sys, re, os, time, csv
 from multiprocessing import Process
 from collections import deque
@@ -10,7 +10,8 @@ from collections import deque
 genes = deque() # use a deque structure for containing my elements
 count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
 count_output = 'expression_out.csv'
-#====================================
+#==================================================================
+
 def gene_handler(mRNA_inputfile):
     """gene_handler() adds the genes into the 'genes' deque. Important to note that exon lengths come from elsewhere."""
     # This will have every gene because it is coming from the mRNA.bed file which has everything.
@@ -56,6 +57,7 @@ def count_iterator(countfiles):
     a_dict = {}
     for countfile in countfiles:
         with open(countfile, 'r') as f_in:
+            total_count = 0
             for row in f_in:
                 row = re.split('\t+',row)
                 key = row[0]
@@ -65,32 +67,75 @@ def count_iterator(countfiles):
                     a_dict[key] = count
                 elif key in a_dict:
                     a_dict[key] += count
+                total_count += count
 
     for countfile in countfiles:
         for elem in genes:
             name = elem.getName()
             count = a_dict[name]
-            #count = count/len(countfiles) # average the counts
 
-            #elem.count = count
+            if countfile == countfiles[0]:
+                elem.count_0 = count
+            elif countfile == countfiles[1]:
+                elem.count_1 = count
+            elif countfile == countfiles[2]:
+                elem.count_2 = count
+            elif countfile == countfiles[3]:
+                elem.count_3 = count
+            elif countfile == countfiles[4]:
+                elem.count_4 = count
+            elif countfile == countfiles[5]:
+                elem.count_5 = count
 
-        #count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
+    TPM(total_count)
+    #FPKM(total_count)
+
+def TPM(total_count):
+    for elem in genes:
+        length = elem.length/1000 # we want it in kb
+        for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
+            count = getattr(elem,x)
+            count_over_length = count/length
+
+            #summation =
+            setattr(elem,x,count)
 
 
-    return genes
 
 
+
+    #for elem in genes:
+        #for x in ['start', 'stop']:
+            #print(getattr(elem, x))
+            #print()
+
+
+
+    #for elem in genes:
+        #print(elem.__dict__)
+
+
+        #b = [a for a in dir(elem) if not a.startswith('__')]
+        #print(b)
+        #for item in b:
+            #if item[0:5] == 'count':
+                #getattr(
+                #item += 5
+
+
+
+
+
+
+
+#=============================================================
 def write_structure():
     with open(count_output, 'w') as f_out:
-        fieldnames = ['name', 'chromosome', 'start', 'stop', 'length', 'count']
+        fieldnames = ['name', 'chromosome', 'start', 'stop', 'length','count_0','count_1','count_2','count_3','count_4','count_5']
         f_out = csv.DictWriter(f_out,fieldnames=fieldnames)
         f_out.writeheader()
         for elem in genes:
             f_out.writerow(elem.__dict__)
-
-
-
-
 
 def info():
     print('module name:', __name__)
@@ -104,7 +149,7 @@ def run_all(gtf_inputfile,mRNA_inputfile):
     gene_handler(mRNA_inputfile)
     gene_handler_2(gtf_inputfile)
     count_iterator(count_list)
-    #write_structure()
+    write_structure()
 
 #=============================================================
 class Gene(object):
@@ -115,12 +160,12 @@ class Gene(object):
         self.stop = int(stop)
 
         #count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
+        self.count_0 = 0
         self.count_1 = 0
         self.count_2 = 0
         self.count_3 = 0
         self.count_4 = 0
         self.count_5 = 0
-        self.count_6 = 0
 
     def getName(self):
         return self.name
