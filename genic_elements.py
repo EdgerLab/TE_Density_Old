@@ -42,6 +42,7 @@ class Gene(Genic_Element):
     def __init__(self, number, chromosome, start, stop, maker_name):
         super().__init__(number, chromosome, start, stop)
         self.maker_name = maker_name
+        self.window_size = 0
 
         # I am going to create a left, center, and right density for each TE element, including classes and families
         # This is where things get obnoxiously complicated.
