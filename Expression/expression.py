@@ -83,10 +83,8 @@ def total_count():
 def TPM():
     for key, val in count_dict.items():
         # key is the file, and count is the count reference
-        # I need something for total count
         total_attribute = 'total_'+val
         tpm_ref = 'TPM_' + val.split('_')[1]
-        print(tpm_ref)
         for elem in genes:
             count = getattr(elem,val)
             length = getattr(elem,'length')
@@ -96,7 +94,19 @@ def TPM():
             setattr(elem,tpm_ref,TPM_val)
 
 def FPKM():
-    pass
+    for key, val in count_dict.items():
+        # key is the file, and count is the count reference
+        total_attribute = 'total_'+val
+        fpkm_ref = 'FPKM_' + val.split('_')[1]
+        for elem in genes:
+            count = getattr(elem,val)
+            length = getattr(elem,'length')
+            total_count = getattr(elem,total_attribute)
+
+            a = total_count/1000000
+            b = count/a
+            FPKM_val = b/length
+            setattr(elem,fpkm_ref,FPKM_val)
 
 
 
@@ -110,7 +120,7 @@ def FPKM():
 def write_structure(a_dictionary):
     with open(count_output, 'w') as f_out:
         fieldnames = ['name', 'chromosome', 'start', 'stop', 'length','count_0','count_1','count_2','count_3','count_4','count_5', 'total_count_0','total_count_1','total_count_2','total_count_3','total_count_4','total_count_5',
-        'TPM_0','TPM_1','TPM_2','TPM_3','TPM_4','TPM_5']
+        'TPM_0','TPM_1','TPM_2','TPM_3','TPM_4','TPM_5','FPKM_0','FPKM_1','FPKM_2','FPKM_3','FPKM_4','FPKM_5']
         f_out = csv.DictWriter(f_out,fieldnames=fieldnames)
         f_out.writeheader()
         for elem in a_dictionary:
@@ -122,6 +132,7 @@ def run_all(gtf_inputfile,mRNA_inputfile):
     count_iterator(count_dict)
     total_count()
     TPM()
+    FPKM()
     write_structure(genes)
 
 #=============================================================
