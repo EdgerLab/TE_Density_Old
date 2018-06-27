@@ -62,11 +62,11 @@ def count_iterator(count_dict):
             for row in f_in:
                 row = re.split('\t+',row)
                 gene = row[0]
+                count = int(row[1])
 
                 for elem in genes:
                     name = elem.name
                     if name == gene:
-                        count = int(row[1])
                         setattr(elem,val,count)
 
 
@@ -130,7 +130,7 @@ def write_test():
 #=============================================================
 def write_structure(a_dictionary):
     with open(count_output, 'w') as f_out:
-        fieldnames = ['name', 'chromosome', 'start', 'stop', 'length','count_0','count_1','count_2','count_3','count_4','count_5']
+        fieldnames = ['name', 'chromosome', 'start', 'stop', 'length','count_0','count_1','count_2','count_3','count_4','count_5', 'total_count_0','total_count_1','total_count_2','total_count_3','total_count_4','total_count_5']
         f_out = csv.DictWriter(f_out,fieldnames=fieldnames)
         f_out.writeheader()
         for elem in a_dictionary:
