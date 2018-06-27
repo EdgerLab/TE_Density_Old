@@ -9,7 +9,7 @@ from collections import deque
 #import genic_elements
 genes = deque() # use a deque structure for containing my elements
 count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
-count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1','ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5']
+count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1','ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
 count_output = 'expression_out.csv'
 #==================================================================
 
@@ -54,39 +54,34 @@ def gene_handler_2(gtf_inputfile):
         except KeyError:
             continue
 
-def count_iterator(countfiles):
+def count_iterator(count_dict):
+    for key, val in count_dict.items():
+        with open(key, 'r') as f_in:
+            for row in f_in:
+                row = re.split('\t+',row)
+                gene = row[0]
+
+                for elem in genes:
+                    name = elem.name
+                    if name == gene:
+                        count = int(row[1])
+                        setattr(elem,val,count)
+                        #print(count)
+
+def total_count():
     for elem in genes:
-        for countfile in countfiles:
-            with open(countfile, 'r') as f_in:
-                total_count = 0
-                for row in f_in:
-                    row = re.split('\t+',row)
-                    gene = row[0]
-                    count = int(row[1])
-
-                    if countfile == countfiles[0]:
-                        elem.count_0 = count
-                    elif countfile == countfiles[1]:
-                        elem.count_1 = count
-                    elif countfile == countfiles[2]:
-                        elem.count_2 = count
-                    elif countfile == countfiles[3]:
-                        elem.count_3 = count
-                    elif countfile == countfiles[4]:
-                        elem.count_4 = count
-                    elif countfile == countfiles[5]:
-                        elem.count_5 = count
-                    total_count += count
-                need dcit
-
-    for countfile in countfiles:
+        for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
+            total = 0
+            count = getattr(elem,x)
+            total += count
+        specific_attribute = 'total_'+x
+        print(x)
         for elem in genes:
-            name = elem.getName()
-            count = a_dict[name]
+            setattr(elem,specific_attribute,total)
 
 
-    TPM(total_count)
-    #FPKM(total_count)
+
+
 
 def TPM(total_count):
     for elem in genes:
@@ -95,7 +90,6 @@ def TPM(total_count):
             count = getattr(elem,x)
             count_over_length = count/length
 
-            #summation =
             setattr(elem,x,count)
 
 
@@ -121,18 +115,21 @@ def TPM(total_count):
                 #item += 5
 
 
-
+def write_test():
+    for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
+        specific_attribute = 'total_'+x
+        print(specific_attribute)
 
 
 
 
 #=============================================================
-def write_structure():
+def write_structure(a_dictionary):
     with open(count_output, 'w') as f_out:
         fieldnames = ['name', 'chromosome', 'start', 'stop', 'length','count_0','count_1','count_2','count_3','count_4','count_5']
         f_out = csv.DictWriter(f_out,fieldnames=fieldnames)
         f_out.writeheader()
-        for elem in genes:
+        for elem in a_dictionary:
             f_out.writerow(elem.__dict__)
 
 def info():
@@ -146,8 +143,8 @@ def run_all(gtf_inputfile,mRNA_inputfile):
     info()
     gene_handler(mRNA_inputfile)
     gene_handler_2(gtf_inputfile)
-    count_iterator(count_list)
-    write_structure()
+    count_iterator(count_dict)
+    total_count()
 
 #=============================================================
 class Gene(object):
@@ -164,6 +161,13 @@ class Gene(object):
         self.count_3 = 0
         self.count_4 = 0
         self.count_5 = 0
+
+        self.total_count_0 = 0
+        self.total_count_1 = 0
+        self.total_count_2 = 0
+        self.total_count_3 = 0
+        self.total_count_4 = 0
+        self.total_count_5 = 0
 
     def getName(self):
         return self.name
@@ -183,6 +187,7 @@ class Gene(object):
 #===============================================================
 if __name__ == '__main__':
     #run_all('camarosa_gtf_data.gtf','mRNA.bed')
+    write_test()
     run_all('xx00','mRNA00')
 
 
