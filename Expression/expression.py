@@ -10,6 +10,9 @@ from collections import deque
 genes = deque() # use a deque structure for containing my elements
 count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
 count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1','ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
+
+
+count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1'}#,'ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
 count_output = 'expression_out.csv'
 #==================================================================
 
@@ -57,7 +60,7 @@ def gene_handler_2(gtf_inputfile):
 def count_iterator(count_dict):
     """Adds count values into the dictionary"""
     for key, val in count_dict.items():
-        print(key)
+        print(key) # print the file
         with open(key, 'r') as f_in:
             for row in f_in:
                 row = re.split('\t+',row)
@@ -73,12 +76,13 @@ def count_iterator(count_dict):
 def total_count():
     """Calculates the total count and adjusts the attribute accordingly"""
     print('start total count')
-    for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
+    #for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
+    for key, val in count_dict.items():
         total = 0
         for elem in genes:
-            count = getattr(elem,x)
+            count = getattr(elem,val)
             total += count
-        specific_attribute = 'total_'+x
+        specific_attribute = 'total_'+val
 
         for elem in genes:
             setattr(elem,specific_attribute,total)
@@ -191,9 +195,9 @@ class Gene(object):
 
 #===============================================================
 if __name__ == '__main__':
-    #run_all('camarosa_gtf_data.gtf','mRNA.bed')
+    run_all('camarosa_gtf_data.gtf','mRNA.bed')
     #write_test()
-    run_all('xx00','mRNA00')
+    #run_all('xx00','mRNA00')
 
 
 
