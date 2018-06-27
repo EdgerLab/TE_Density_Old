@@ -10,9 +10,9 @@ from collections import deque
 genes = deque() # use a deque structure for containing my elements
 count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
 count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1','ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
+gene_dictionary = {}
 
-
-count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1'}#,'ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
+#count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1'}#,'ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
 count_output = 'expression_out.csv'
 #==================================================================
 
@@ -27,6 +27,7 @@ def gene_handler(mRNA_inputfile):
             stop = row[2]
             maker_name = row[3].strip('\n')
             genes.append(Gene(maker_name,chromosome,start,stop))
+            #gene_dictionary[maker_name]=self
             #Gene(maker_name,chromosome,start,stop)
 
 def gene_handler_2(gtf_inputfile):
@@ -60,30 +61,22 @@ def gene_handler_2(gtf_inputfile):
 def count_iterator(count_dict):
     """Adds count values into the dictionary"""
     for key, val in count_dict.items():
-        print(key) # print the file
         with open(key, 'r') as f_in:
             for row in f_in:
                 row = re.split('\t+',row)
                 gene = row[0]
                 count = int(row[1])
-
-                for elem in genes:
-                    name = elem.name
-                    if name == gene:
-                        setattr(elem,val,count)
-
+                setattr(gene_dictionary[gene],val,count) # use a dictionary to get reference to the object with no loop
+                # val is a reference to the attribute
+                # count is the number we set for that attribute
 
 def total_count():
     """Calculates the total count and adjusts the attribute accordingly"""
-    print('start total count')
-    #for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
     for key, val in count_dict.items():
         total = 0
         for elem in genes:
-            count = getattr(elem,val)
-            total += count
+            total += getattr(elem,val) # add the count value to the total
         specific_attribute = 'total_'+val
-
         for elem in genes:
             setattr(elem,specific_attribute,total)
 
@@ -97,7 +90,6 @@ def TPM(total_count):
         for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
             count = getattr(elem,x)
             count_over_length = count/length
-
             setattr(elem,x,count)
 
 
@@ -128,8 +120,14 @@ def write_test():
         specific_attribute = 'total_'+x
         print(specific_attribute)
 
-
-
+def count_sum():
+    with open('ERR855501.htseq.count') as f_in:
+        total = 0
+        for row in f_in:
+            row = re.split('\t+',row)
+            count = int(row[1])
+            total += count
+    print(total)
 
 #=============================================================
 def write_structure(a_dictionary):
@@ -162,6 +160,7 @@ class Gene(object):
         self.chromosome = chromosome
         self.start = int(start)
         self.stop = int(stop)
+        gene_dictionary[maker_name]=self
 
         #count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
         self.count_0 = 0
@@ -195,6 +194,7 @@ class Gene(object):
 
 #===============================================================
 if __name__ == '__main__':
+    count_sum()
     run_all('camarosa_gtf_data.gtf','mRNA.bed')
     #write_test()
     #run_all('xx00','mRNA00')
