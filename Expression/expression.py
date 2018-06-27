@@ -55,7 +55,9 @@ def gene_handler_2(gtf_inputfile):
             continue
 
 def count_iterator(count_dict):
+    """Adds count values into the dictionary"""
     for key, val in count_dict.items():
+        print(key)
         with open(key, 'r') as f_in:
             for row in f_in:
                 row = re.split('\t+',row)
@@ -66,16 +68,18 @@ def count_iterator(count_dict):
                     if name == gene:
                         count = int(row[1])
                         setattr(elem,val,count)
-                        #print(count)
+
 
 def total_count():
-    for elem in genes:
-        for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
-            total = 0
+    """Calculates the total count and adjusts the attribute accordingly"""
+    print('start total count')
+    for x in ['count_0','count_1','count_2','count_3','count_4','count_5']:
+        total = 0
+        for elem in genes:
             count = getattr(elem,x)
             total += count
         specific_attribute = 'total_'+x
-        print(x)
+
         for elem in genes:
             setattr(elem,specific_attribute,total)
 
@@ -145,6 +149,7 @@ def run_all(gtf_inputfile,mRNA_inputfile):
     gene_handler_2(gtf_inputfile)
     count_iterator(count_dict)
     total_count()
+    write_structure(genes)
 
 #=============================================================
 class Gene(object):
@@ -187,7 +192,7 @@ class Gene(object):
 #===============================================================
 if __name__ == '__main__':
     #run_all('camarosa_gtf_data.gtf','mRNA.bed')
-    write_test()
+    #write_test()
     run_all('xx00','mRNA00')
 
 
