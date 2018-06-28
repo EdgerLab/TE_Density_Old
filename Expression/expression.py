@@ -5,14 +5,11 @@
 import sys, re, os, time, csv
 from multiprocessing import Process
 from collections import deque
-#sys.path.insert(0, '/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/') # specify path for import
-#import genic_elements
+
 genes = deque() # use a deque structure for containing my elements
-count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
 count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1','ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
 gene_dictionary = {}
 
-#count_dict = {'ERR855501.htseq.count':'count_0','ERR855502.htseq.count':'count_1'}#,'ERR855503.htseq.count':'count_2','ERR855504.htseq.count':'count_3','ERR855505.htseq.count':'count_4','ERR855506.htseq.count':'count_5'}
 count_output = 'expression_out.csv'
 #==================================================================
 
@@ -27,8 +24,7 @@ def gene_handler(mRNA_inputfile):
             stop = row[2]
             maker_name = row[3].strip('\n')
             genes.append(Gene(maker_name,chromosome,start,stop))
-            #gene_dictionary[maker_name]=self
-            #Gene(maker_name,chromosome,start,stop)
+
 
 def gene_handler_2(gtf_inputfile):
     """Use a simple dictionary to get the exon lengths calculated."""
@@ -144,7 +140,6 @@ class Gene(object):
         self.stop = int(stop)
         gene_dictionary[maker_name]=self
 
-        #count_list = ['ERR855501.htseq.count','ERR855502.htseq.count','ERR855503.htseq.count','ERR855504.htseq.count','ERR855505.htseq.count','ERR855506.htseq.count']
         self.count_0 = 0
         self.count_1 = 0
         self.count_2 = 0
