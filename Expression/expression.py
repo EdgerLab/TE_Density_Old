@@ -49,7 +49,7 @@ def gene_handler_2(gtf_inputfile):
     for elem in genes:
         try:
             name = elem.getName()
-            length = int(a_dict[name])/1000 # we want it in kb
+            length = int(a_dict[name])
             elem.length = length
         except KeyError:
             continue
@@ -84,6 +84,7 @@ def TPM():
         for elem in genes:
             count = getattr(elem,val)
             length = getattr(elem,'length')
+            length = length/1000 # kb
             total_count = getattr(elem,total_attribute)
 
             TPM_val = (count/length)/(total_count)/(1000000)
@@ -97,6 +98,7 @@ def FPKM():
         for elem in genes:
             count = getattr(elem,val)
             length = getattr(elem,'length')
+            length = length/1000
             total_count = getattr(elem,total_attribute)
 
             a = total_count/1000000
