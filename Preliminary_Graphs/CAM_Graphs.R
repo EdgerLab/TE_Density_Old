@@ -65,6 +65,19 @@ scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") +
 ylim(0,0.075) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(breaks = c(-10000, -9500, -9000, -8500, -8000, -7500, -7000, -6500, -6000, -5500, -5000, -4500, -4000, -3500, -3000, -2500, -2000, -1500,-1000,-500,0,500,1000,1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000))
 
 #==============================================
+# Expression Data
+directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
+all_data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
+all_data_df <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
+all_data_df <- subset(all_data_df, select = -c(number))
+
+second_directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/")
+Expression <- read.csv('expression_out.csv', header=TRUE, sep=",")
+
+
+
+
+
 
 #==============================================
 # Write the data
