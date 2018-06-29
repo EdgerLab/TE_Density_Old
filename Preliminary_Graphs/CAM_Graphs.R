@@ -1,5 +1,3 @@
-# By Scott Teresi and Kevin Bird
-#==========================================================================================================
 #install.packages("reshape2")
 #install.packages("dplyr")
 #install.packages("tidyr")
@@ -14,8 +12,10 @@ library("cowplot")
 # Load the data
 directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
 all_data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
-all_data_df <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
-all_data_df <- subset(all_data_df, select = -c(number))
+all_data <- do.call(rbind,lapply(all_data,read.csv))
+all_data <- select(all_data,-number)
+all_data_dfUnclean <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
+#all_data_df <- all_data_dfUnclean %>% select(-number)
 #==========================================================================================================
 # Re-shape data to make column for variable TE type/family and corresponding value for TE density
 
@@ -47,8 +47,8 @@ TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Densi
 #Subset to look only at TE families and rename column to TE_family
 
 # Will need to be renamed in a spot once the LINE fam is added
-TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="None"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
-colnames(TE.Family.Density.Means)[2]<-"TE_Family"
+TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
+colnames(TE.Family.Density.Means)[2]<-"TE_Family" # LINE fam not none
 
 #==============================================
 # Plot
@@ -66,19 +66,63 @@ ylim(0,0.075) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(brea
 
 #==============================================
 # Expression Data
-directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
-all_data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
-all_data_df <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
-all_data_df <- subset(all_data_df, select = -c(number))
+library("stringi")
+library("tidyr")
+library("dplyr")
+library("reshape2")
+library("cowplot")
 
+#directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
+#all_data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
+#all_data_df <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
+#all_data_df <- subset(all_data_df, select = -c(number)) # removes the number column
+#Reshaped<-melt(data = all_data_df,id=c("chromosome","maker_name","start","stop","prox_left","prox_right","they_are_inside","length","window_size")) # only the values not mentioned, are the ones that turn into the variable and value column
+#TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
+
+#-------------------
+# Proximity
+library(scales)
+y_limit <- 100000
+y_step = 10000
+
+left_prox_graph <- ggplot(all_data_df, aes(x=prox_left)) +geom_histogram(binwidth=100,color='black',fill='white') +
+scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
+scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
+labs(title='Left Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
+print(left_prox_graph)
+
+right_prox_graph <- ggplot(all_data_df, aes(x=prox_right)) +geom_histogram(binwidth=100,color='black',fill='white') +
+scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
+scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
+labs(title='Right Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
+print(right_prox_graph)
+# Aesthetics just tell what the x and y axis should be, coloring and such
+# good habit is to put as much general aesthetics into the main ggplot function
+
+
+
+#-------------------------------------------------------
 second_directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/")
 Expression <- read.csv('expression_out.csv', header=TRUE, sep=",")
+#Expression <- mutate(Expression,ExpressionMean<-mean(c(TPM_0,TPM_1,TPM_2,TPM_3,TPM_4,TPM_5)))
+Expression$TPM_AVG <- rowMeans(Expression[c('TPM_0','TPM_1','TPM_2','TPM_3','TPM_4','TPM_5')])
+Expression$FPKM_AVG <- rowMeans(Expression[c('FPKM_0','FPKM_1','FPKM_2','FPKM_3','FPKM_4','FPKM_5')])
+
+GeneExpressionDF<-Expression %>% select(name,TPM_AVG,FPKM_AVG)
+colnames(GeneExpressionDF)<-c("maker_name","TPM_AVG","FPKM_AVG")
+Reshapetest<-Reshaped %>%  left_join(GeneExpressionDF, by="maker_name")
+
+TE.TypeExp<-Reshapetest %>% select(one_of(c("DNA_left","DNA_right","LINE_left","LINE_right","LTR_left","LTR_right","Unknown_left","Unknown_right")))
+#Subset to look only at TE families and rename column to TE_family
+
+# Will need to be renamed in a spot once the LINE fam is added
+#TE.FamilyExp<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
 
 
-
-
+#ggsave(ggplot(Reshapetest,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable))
 
 
 #==============================================
 # Write the data
 #write.csv(Reshaped,'data.csv')
+
