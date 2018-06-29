@@ -1,8 +1,5 @@
-#install.packages("reshape2")
-#install.packages("dplyr")
-#install.packages("tidyr")
-#install.packages("cowplot")
-#==========================================================================================================
+# By Scott Teresi
+#------------------------------
 library("stringi")
 library("tidyr")
 library("dplyr")
@@ -49,57 +46,6 @@ TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Densi
 # Will need to be renamed in a spot once the LINE fam is added
 TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
 colnames(TE.Family.Density.Means)[2]<-"TE_Family" # LINE fam not none
-
-#==============================================
-# Plot
-# TE type
-ggplot(TE.Type.Density.Means,aes(x=as.numeric(window_size),y=avg,group=TE_type,colour=TE_type))+geom_point(aes(size=5)) +
-geom_line()+
-scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") +
-ylim(0,0.075) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(breaks = c(-10000, -9500, -9000, -8500, -8000, -7500, -7000, -6500, -6000, -5500, -5000, -4500, -4000, -3500, -3000, -2500, -2000, -1500,-1000,-500,0,500,1000,1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000))
-
-# TE Family
-ggplot(TE.Family.Density.Means,aes(x=as.numeric(window_size),y=avg,group=TE_Family,colour=TE_Family))+geom_point(aes(size=5)) +
-geom_line()+
-scale_colour_manual(values=myColors)+facet_grid(~Location,scales="free") +
-ylim(0,0.075) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(breaks = c(-10000, -9500, -9000, -8500, -8000, -7500, -7000, -6500, -6000, -5500, -5000, -4500, -4000, -3500, -3000, -2500, -2000, -1500,-1000,-500,0,500,1000,1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000))
-
-#==============================================
-# Expression Data
-#library("stringi")
-#library("tidyr")
-#library("dplyr")
-#library("reshape2")
-#library("cowplot")
-
-#directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
-#all_data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
-#all_data_df <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
-#all_data_df <- subset(all_data_df, select = -c(number)) # removes the number column
-#Reshaped<-melt(data = all_data_df,id=c("chromosome","maker_name","start","stop","prox_left","prox_right","they_are_inside","length","window_size")) # only the values not mentioned, are the ones that turn into the variable and value column
-#TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
-
-#-------------------
-# Proximity
-  #library(scales)
-  #y_limit <- 100000
-  #y_step = 10000
-  
-  #left_prox_graph <- ggplot(all_data_df, aes(x=prox_left)) +geom_histogram(binwidth=100,color='black',fill='white') +
-  #scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
-  #scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
-  #labs(title='Left Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
-  #print(left_prox_graph)
-  
-  #right_prox_graph <- ggplot(all_data_df, aes(x=prox_right)) +geom_histogram(binwidth=100,color='black',fill='white') +
-  #scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
-  #scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
-  #labs(title='Right Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
-  #print(right_prox_graph)
-  # Aesthetics just tell what the x and y axis should be, coloring and such
-  # good habit is to put as much general aesthetics into the main ggplot function
-  
-
 
 #============================================================================
 
