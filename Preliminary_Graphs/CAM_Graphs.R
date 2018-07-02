@@ -21,9 +21,11 @@ TE_Data <- select(TE_Data,-number) # remove the numbers column, it is vestigial
 Reshaped<-melt(data = TE_Data,id=c("chromosome","maker_name","start","stop","prox_left","prox_right","they_are_inside","length","window_size"))
 rm(TE_Data) # remove TE_Data because we need the RAM
 
-TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
+# calculate the average and also divide by 2 to simplify, 2 used to mean full density.
+TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value/2)) %>% arrange(avg) 
 
 rm(Reshaped) # remove Reshaped because we need the RAM
+
 # Split TE type/family and location (e.g. left, right, intragenic) in hacky way (reverse string, split by "_", reverse strings again)
 TE.Density.Means$variable <-stri_reverse(TE.Density.Means$variable)
 TE.Density.Means<-TE.Density.Means%>%separate(variable,into = c("Location","TE_type"),sep="_",extra="merge")
