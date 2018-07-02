@@ -11,8 +11,7 @@ directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE
 TE_Data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
 TE_Data <- do.call(rbind,lapply(TE_Data,read.csv))
 TE_Data <- select(TE_Data,-number) # remove the numbers column, it is vestigial
-#==========================================================================================================
-# Re-shape data to make column for variable TE type/family and corresponding value for TE density
+
 
 Reshaped<-melt(data = TE_Data,id=c("chromosome","maker_name","start","stop","prox_left","prox_right","they_are_inside","length","window_size"))
 rm(TE_Data) # remove TE_Data because we need the RAM
@@ -47,31 +46,86 @@ TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Densi
 TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
 colnames(TE.Family.Density.Means)[2]<-"TE_Family" # LINE fam not none
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #============================================================================
-
-directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
-TE_Data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
-TE_Data <- do.call(rbind,lapply(TE_Data,read.csv))
-TE_Data <- select(TE_Data,-number) # remove the numbers column, it is vestigial
-
-second_directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/") # specify the file path
+setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/") # specify the file path
 Expression <- read.csv('expression_out.csv', header=TRUE, sep=",") # read the expression csv
-
 Expression$TPM_AVG <- rowMeans(Expression[c('TPM_0','TPM_1','TPM_2','TPM_3','TPM_4','TPM_5')]) # calculate the mean for TPM
 Expression$FPKM_AVG <- rowMeans(Expression[c('FPKM_0','FPKM_1','FPKM_2','FPKM_3','FPKM_4','FPKM_5')]) # calculate the mean for FPKM
 
 GeneExpressionDF<-Expression %>% select(name,TPM_AVG,FPKM_AVG) # make a new data frame with only the TPM and FPKM averages
 colnames(GeneExpressionDF)<-c("maker_name","TPM_AVG","FPKM_AVG") # reset the name column to be maker_name
-Reshapetest<-Reshaped %>%  left_join(GeneExpressionDF, by="maker_name")
 
-TE.TypeExp<-Reshapetest %>% select(one_of(c("DNA_left","DNA_right","LINE_left","LINE_right","LTR_left","LTR_right","Unknown_left","Unknown_right")))
+#TE.TypeExp<-Reshaped %>% filter(variable == "DNA_left"| variable == "DNA_right"| variable == "LINE_left"| variable == "LINE_right"| variable == "LTR_left"|
+                                #variable == "LTR_right"| variable == "Unknown_left"| variable == "Unknown_right")
+
+TE.TypeExp<-Reshaped %>% filter(variable == "LTR_right")
+
+
+TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
+
+#ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
+#graph <- ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
+#ggsave(graph)
+
+TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,]
+
+
+
+pdf('testimage.pdf')
+ggplot(TE.TypeExp,aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)
+dev.off()
+
+
+
+
+TE.TypeExp<-Reshaped %>% filter(variable == "LTR_left")
+
+
+TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
+
+#ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
+#graph <- ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
+#ggsave(graph)
+
+TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,]
+
+
+
+pdf('testimage2.pdf')
+ggplot(TE.TypeExp,aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)
+dev.off()
+
+
+
+ols_test_bartlett(TE.TypeExp,TPM_AVG,value)
+
+
+
+
+#print(graph)
+
 #Subset to look only at TE families and rename column to TE_family
 
 # Will need to be renamed in a spot once the LINE fam is added
 #TE.FamilyExp<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
 
 
-#ggsave(ggplot(Reshapetest,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable))
 
 
 #==============================================
