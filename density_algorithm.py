@@ -205,7 +205,12 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
                         elem.Unknown_right += right_density
 
                     # Families
-                    if t_family == 'MULE':
+
+                    if t_family == 'LTRUnknown':
+                        elem.LTRUnknown_left += left_density
+                        elem.LTRUnknown_intra += intra_density
+                        elem.LTRUnknown_right += right_density
+                    elif t_family == 'MULE':
                         elem.MULE_left += left_density
                         elem.MULE_intra += intra_density
                         elem.MULE_right += right_density
@@ -251,6 +256,7 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
                     'CMC_EnSpm_intra', 'CMC_EnSpm_right', 'Copia_left','Copia_intra','Copia_right',
                     'LINE_fam_left','LINE_fam_intra','LINE_fam_right','hAT_left','hAT_intra','hAT_right',
                     'PIF_Harbinger_left','PIF_Harbinger_intra','PIF_Harbinger_right','prox_left','prox_right',
+                    'LTRUnknown_left','LTRUnknown_intra','LTRUnknown_right',
                     'they_are_inside','number', 'window_size']# Supply the header to the file, this also orders your output columns in the supplied order. Must have all attributes listed.
                     # You will need to edit the fieldnames to match your data
 
@@ -288,7 +294,6 @@ def reset(deque):
         elem.Unknown_intra = 0
         elem.Unknown_right = 0
 
-
         elem.MULE_left = 0
         elem.MULE_intra = 0
         elem.MULE_right = 0
@@ -320,6 +325,10 @@ def reset(deque):
         elem.PIF_Harbinger_left  = 0
         elem.PIF_Harbinger_intra  = 0
         elem.PIF_Harbinger_right  = 0
+
+        elem.LTRUnknown_left = 0
+        elem.LTRUnknown_intra = 0
+        elem.LTRUnknown_right = 0
 
         elem.they_are_inside = 0
 

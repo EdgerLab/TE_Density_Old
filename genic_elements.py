@@ -98,6 +98,10 @@ class Gene(Genic_Element):
         self.PIF_Harbinger_intra= 0
         self.PIF_Harbinger_right = 0
 
+        self.LTRUnknown_left = 0
+        self.LTRUnknown_intra = 0
+        self.LTRUnknown_right = 0
+
         #------------------------
         # Proximities
         self.prox_left = None
