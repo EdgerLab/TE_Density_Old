@@ -12,7 +12,8 @@ library("cowplot")
 # Load the data
 directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
 TE_Data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
-TE_Data <- do.call(rbind,lapply(TE_Data,read.csv))
+rm(directory)
+TE_Data <- do.call(rbind,lapply(TE_Data,read.csv)) # sometimes this step needs to be run twice?
 TE_Data <- select(TE_Data,-number) # remove the numbers column, it is vestigial
 #==========================================================================================================
 # Re-shape data to make column for variable TE type/family and corresponding value for TE density
@@ -21,6 +22,8 @@ Reshaped<-melt(data = TE_Data,id=c("chromosome","maker_name","start","stop","pro
 rm(TE_Data) # remove TE_Data because we need the RAM
 
 TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
+
+rm(Reshaped) # remove Reshaped because we need the RAM
 # Split TE type/family and location (e.g. left, right, intragenic) in hacky way (reverse string, split by "_", reverse strings again)
 TE.Density.Means$variable <-stri_reverse(TE.Density.Means$variable)
 TE.Density.Means<-TE.Density.Means%>%separate(variable,into = c("Location","TE_type"),sep="_",extra="merge")
@@ -36,6 +39,7 @@ colScale <- scale_fill_manual(name="", values=myColors)
 # Reorder Location factors so that plot shows left, intra, right
 TE.Density.Means$Location <- factor(TE.Density.Means$Location, levels=c("left", "intra", "right"))
 
+# make left window negative
 TE.Density.Means[TE.Density.Means$Location=="left",]$window_size<-TE.Density.Means[TE.Density.Means$Location=="left",]$window_size*-1
 
 # Rename the middle column to have a capital I
@@ -45,7 +49,6 @@ TE.Density.Means[TE.Density.Means$Location=="intra",]$window_size<-"0"
 TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="LTR"|TE.Density.Means$TE_type=="Unknown",]
 
 #Subset to look only at TE families and rename column to TE_family
-
 # Will need to be renamed in a spot once the LINE fam is added
 TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
 colnames(TE.Family.Density.Means)[2]<-"TE_Family" # LINE fam not none
@@ -81,24 +84,24 @@ ylim(0,0.075) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(brea
 
 #-------------------
 # Proximity
-  #library(scales)
-  #y_limit <- 100000
-  #y_step = 10000
-  
-  #left_prox_graph <- ggplot(all_data_df, aes(x=prox_left)) +geom_histogram(binwidth=100,color='black',fill='white') +
-  #scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
-  #scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
-  #labs(title='Left Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
-  #print(left_prox_graph)
-  
-  #right_prox_graph <- ggplot(all_data_df, aes(x=prox_right)) +geom_histogram(binwidth=100,color='black',fill='white') +
-  #scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
-  #scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
-  #labs(title='Right Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
-  #print(right_prox_graph)
-  # Aesthetics just tell what the x and y axis should be, coloring and such
-  # good habit is to put as much general aesthetics into the main ggplot function
-  
+  library(scales)
+  y_limit <- 100000
+  y_step = 10000
+
+  left_prox_graph <- ggplot(all_data_df, aes(x=prox_left)) +geom_histogram(binwidth=100,color='black',fill='white') +
+  scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
+  scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
+  labs(title='Left Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
+  print(left_prox_graph)
+
+  right_prox_graph <- ggplot(all_data_df, aes(x=prox_right)) +geom_histogram(binwidth=100,color='black',fill='white') +
+  scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
+  scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
+  labs(title='Right Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
+  print(right_prox_graph)
+   #Aesthetics just tell what the x and y axis should be, coloring and such
+   #good habit is to put as much general aesthetics into the main ggplot function
+
 
 
 #============================================================================
