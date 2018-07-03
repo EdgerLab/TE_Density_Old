@@ -15,8 +15,10 @@ def test():
     #for item in file_list:
 
 
-    with open('GO_Groupings.csv') as f_out:
-        writer = csv.DictWriter(f_out,fieldnames = fieldnames)
+    with open('GO_Groupings.csv','w') as f_out:
+        #fieldnames=['name','window_size','classification','value']
+        writer = csv.writer(f_out)
+        #writer.writeheader()
         with open("TE_Data.csv") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader: # refer to the variables through string name
@@ -27,7 +29,9 @@ def test():
                 combined_name = str(window_size)+ '_' + classification
 
                 if value < Lower[combined_name][2] or value > Upper[combined_name][2]:
-                    # Keep the data
+                    #print(combined_name)
+                    write_this = [name,window_size,classification,value]
+                    writer.writerow(write_this)
 
 
 
