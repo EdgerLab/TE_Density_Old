@@ -1,26 +1,22 @@
 # By Scott Teresi --- July 2018
 #---------------------------------------------
 import csv
-import glob
+#import glob
 
 # This function groups the TE's of my file into bins for GO enrichment.
 # I use this file to partition the density of my genes
 
-file_list = glob.glob("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/*density_data.csv")
-
-#-----------------------
-# if fieldnames is not supplied to DictReader then it uses the first line to make the fieldnames
-
-def test():
-    #for item in file_list:
+#file_list = glob.glob("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/*density_data.csv")
+#---------------------------------------------
 
 
+def write_structure():
     with open('GO_Groupings.csv','w') as f_out:
-        #fieldnames=['name','window_size','classification','value']
+        my_header = ['name','window_size','classification','value']
         writer = csv.writer(f_out)
-        #writer.writeheader()
+        writer.writerow([i for i in my_header])
         with open("TE_Data.csv") as csv_file:
-            reader = csv.DictReader(csv_file)
+            reader = csv.DictReader(csv_file) # if fieldnames is not supplied to DictReader then it uses the first line to make the fieldnames
             for row in reader: # refer to the variables through string name
                 name = row['maker_name']
                 window_size = int(row['window_size'])
@@ -29,14 +25,8 @@ def test():
                 combined_name = str(window_size)+ '_' + classification
 
                 if value < Lower[combined_name][2] or value > Upper[combined_name][2]:
-                    #print(combined_name)
                     write_this = [name,window_size,classification,value]
                     writer.writerow(write_this)
-
-
-
-
-
 
 def whitelist_maker():
     """Make a dictionary of the correct pairs"""
@@ -54,9 +44,6 @@ def whitelist_maker():
             Lower[name] = (window_size,classification,lower_number)
             Upper[name] = (window_size,classification,upper_number)
 
-
-
-
 if __name__ == '__main__':
-    whitelist_maker()
+    write_structure()
     test()
