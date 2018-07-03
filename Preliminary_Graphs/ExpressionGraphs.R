@@ -46,23 +46,8 @@ TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Densi
 TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
 colnames(TE.Family.Density.Means)[2]<-"TE_Family" # LINE fam not none
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #============================================================================
+
 setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/") # specify the file path
 Expression <- read.csv('expression_out.csv', header=TRUE, sep=",") # read the expression csv
 Expression$TPM_AVG <- rowMeans(Expression[c('TPM_0','TPM_1','TPM_2','TPM_3','TPM_4','TPM_5')]) # calculate the mean for TPM
@@ -74,15 +59,24 @@ colnames(GeneExpressionDF)<-c("maker_name","TPM_AVG","FPKM_AVG") # reset the nam
 #TE.TypeExp<-Reshaped %>% filter(variable == "DNA_left"| variable == "DNA_right"| variable == "LINE_left"| variable == "LINE_right"| variable == "LTR_left"|
                                 #variable == "LTR_right"| variable == "Unknown_left"| variable == "Unknown_right")
 
-TE.TypeExp<-Reshaped %>% filter(variable == "LTR_right")
 
 
+
+
+
+
+
+
+
+# Take a subset of Reshaped by a variable
+TE.TypeExp <-Reshaped %>% filter(variable == "LTR_right")
 TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
 
 #ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
 #graph <- ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
 #ggsave(graph)
 
+# filter out things with a density above 1
 TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,]
 
 
