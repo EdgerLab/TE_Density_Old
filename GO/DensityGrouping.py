@@ -12,7 +12,7 @@ import csv
 
 def write_structure():
     with open('GO_Groupings.csv','w') as f_out:
-        my_header = ['name','window_size','classification','value']
+        my_header = ['chromosome','name','start','stop','window_size','classification','value']
         writer = csv.writer(f_out)
         writer.writerow([i for i in my_header])
         with open("TE_Data.csv") as csv_file:
@@ -22,11 +22,25 @@ def write_structure():
                 window_size = int(row['window_size'])
                 classification = row['variable']
                 value = float(row['value'])
+                chromosome = row['chromosome']
+                start = row['start']
+                stop = row['stop']
+
                 combined_name = str(window_size)+ '_' + classification
 
-                if value < Lower[combined_name][2] or value > Upper[combined_name][2]:
-                    write_this = [name,window_size,classification,value]
-                    writer.writerow(write_this)
+                #if value <= Lower[combined_name][2] or value >= Upper[combined_name][2]:
+                    #write_this = [chromosome,name,start,stop,window_size,classification,value]
+                    #writer.writerow(write_this)
+
+                if window_size == 1000 and classification[:3] == 'LTR':
+                    if value >= Upper[combined_name][2]: # grab the upper bound values
+                        write_this = [chromosome,name,start,stop,window_size,classification,value]
+                        writer.writerow(write_this)
+
+
+
+
+
 
 def whitelist_maker():
     """Make a dictionary of the correct pairs"""
@@ -45,5 +59,8 @@ def whitelist_maker():
             Upper[name] = (window_size,classification,upper_number)
 
 if __name__ == '__main__':
+    #classification = 'DNA_left'
+    #print(classification[:3])
+    whitelist_maker()
     write_structure()
-    test()
+
