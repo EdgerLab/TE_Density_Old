@@ -41,6 +41,9 @@ def te_handler():
             te_type = whitelist_type(te_type)
             family = whitelist_fam(family)
 
+            if te_type == 'LTR' and family == 'Unknown':
+                family = 'LTRUnknown'
+
             start = row[3]
             chromosome = str(row[0])
             stop = row[4]
@@ -62,7 +65,7 @@ def whitelist_type(te_type):
     for key, val in master_type.items():
         if te_type == key:
             te_type = val
-    return te_type
+    return te_type # returns te_type even if there is no match to anything
 
 def whitelist_fam(family):
     """Renames families into the correct families that we want, 'whitelisting' the acceptable types."""
@@ -136,11 +139,33 @@ def run_all(gtf_inputfile,mRNA_inputfile):
             #print(elem.__dict__)
             #print(elem.length)
     info()
+    #stats()
     get_densities(genes,transposons,500,500,10000,gtf_inputfile)
 
 #---------------------------------------------------------
-def reader(my_deque):
-    pass
+def stats():
+    LTR_Count = 0
+    Unknown_LTR_Count = 0
+    All_Unknown_fam = 0
+    All_Unknown = 0
+    for elem in transposons:
+        if elem.getTe_Type() == 'LTR':
+            LTR_Count += 1
+            if elem.getFamily() == 'Unknown':
+                Unknown_LTR_Count += 1
+        if elem.getFamily() == 'Unknown':
+            All_Unknown_fam += 1
+        if elem.getTe_Type() == 'Unknown':
+            All_Unknown += 1
+
+    print('LTR_Count ' + str(LTR_Count))
+    print('Unknown_LTR_Count ' + str(Unknown_LTR_Count))
+    print('All_Unknown_fam ' + str(All_Unknown_fam))
+    print('All_Unknown ' + str(All_Unknown))
+#---------------------------------------------------------
+
+
+
 
 if __name__ == '__main__':
     my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
