@@ -19,7 +19,7 @@ TE_Data = TE_Data[TE_Data$value<=1,]
 directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/GO/")
 write.csv(TE_Data,file = 'TE_Data.csv')
 
-group_by(TE_Data,window_size) %>% do(data.frame(t(quantile(.$value, probs =  c(0.1,0.9)))))
+group_by(TE_Data,window_size) %>% do(data.frame(t(quantile(.$value, probs =  c(0.1,0.99)))))
 window_groupings = group_by(TE_Data,window_size,variable) %>% do(data.frame(t(quantile(.$value, probs =  c(0.1,0.9)))))
 
 directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/GO/")
