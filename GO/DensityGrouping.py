@@ -26,29 +26,33 @@ def write_structure():
                 name = row['maker_name']
                 window_size = int(row['window_size'])
                 classification = row['variable']
-                value = float(row['value'])
-                chromosome = row['chromosome']
-                start = row['start']
-                stop = row['stop']
 
-                combined_name = str(window_size)+ '_' + classification
+                if classification[:4] == 'LTR_': # don't want LTRUnknown
 
-                #if value <= Lower[combined_name][2] or value >= Upper[combined_name][2]:
-                    #write_this = [chromosome,name,start,stop,window_size,classification,value]
-                    #writer.writerow(write_this)
+                    value = float(row['value'])
+                    chromosome = row['chromosome']
+                    start = row['start']
+                    stop = row['stop']
 
-                if window_size == 1000 and classification[:3] == 'LTR':
-                    if value >= float(Upper[combined_name][2]): # grab the upper bound values
-                        element = Gene(chromosome,name,start,stop,window_size,classification,value)
+                    combined_name = str(window_size)+ '_' + classification
 
-                        if classification[-4:] == 'left':
-                            left.append(element)
+                    #if value <= Lower[combined_name][2] or value >= Upper[combined_name][2]:
+                        #write_this = [chromosome,name,start,stop,window_size,classification,value]
+                        #writer.writerow(write_this)
 
-                        elif classification[-5:] == 'right':
-                            right.append(element)
+                    if window_size == 1000 and classification[:3] == 'LTR':
+                        if value >= float(Upper[combined_name][2]): # grab the upper bound values
+                            element = Gene(chromosome,name,start,stop,window_size,classification,value)
+                            #print(element.__dict__)
 
-                        elif classification[-5:] == 'intra':
-                            intra.append(element)
+                            if classification[-4:] == 'left':
+                                left.append(element)
+
+                            elif classification[-5:] == 'right':
+                                right.append(element)
+
+                            elif classification[-5:] == 'intra':
+                                intra.append(element)
 
 
     fieldnames = ['chromosome','name','start','stop','window_size','classification','value']
@@ -57,27 +61,28 @@ def write_structure():
         f_out.writeheader()
         for elem in left:
             f_out.writerow(elem.__dict__)
-    bashcommand = 'sort -r -k 7,7 -n -t"," left_bounded.txt > sort_left.txt'
-    process = subprocess.Popen(bashcommand.split(), stdout = subprocess.PIPE)
-    output,error = process.communicate()
+
+    #bashcommand = 'sort -r -k7,7 -n -t"," left_bounded.txt > sort_left.txt'
+    #process = subprocess.Popen(bashcommand.split(), stdout = subprocess.PIPE)
+    #output,error = process.communicate()
 
     with open('intra_bounded.txt','w') as f_out:
         f_out = csv.DictWriter(f_out,fieldnames=fieldnames)
         f_out.writeheader()
         for elem in intra:
             f_out.writerow(elem.__dict__)
-    bashcommand = 'sort -r -k 7,7 -n -t"," intra_bounded.txt > sort_intra.txt'
-    process = subprocess.Popen(bashcommand.split(), stdout = subprocess.PIPE)
-    output,error = process.communicate()
+    #bashcommand = 'sort -r -k7,7 -n -t"," intra_bounded.txt > sort_intra.txt'
+    #process = subprocess.Popen(bashcommand.split(), stdout = subprocess.PIPE)
+    #output,error = process.communicate()
 
     with open('right_bounded.txt','w') as f_out:
         f_out = csv.DictWriter(f_out,fieldnames=fieldnames)
         f_out.writeheader()
         for elem in right:
             f_out.writerow(elem.__dict__)
-    bashcommand = 'sort -r -k 7,7 -n -t"," right_bounded.txt > sort_right.txt'
-    process = subprocess.Popen(bashcommand.split(), stdout = subprocess.PIPE)
-    output,error = process.communicate()
+    #bashcommand = 'sort -r -k7,7 -n -t"," right_bounded.txt > sort_right.txt'
+    #process = subprocess.Popen(bashcommand.split(), stdout = subprocess.PIPE)
+    #output,error = process.communicate()
 
 
 
@@ -105,6 +110,7 @@ class Gene(object):
         self.start = int(start)
         self.stop = int(stop)
         self.classification = classification
+        self.window_size = window_size
         self.value = value
         #gene_dictionary[maker_name]=self
 
