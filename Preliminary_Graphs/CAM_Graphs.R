@@ -153,29 +153,31 @@ ylim(0,0.075) + ylab('TE Density') + xlab('Window Size')+scale_x_continuous(brea
 #library("reshape2")
 #library("cowplot")
 
-#directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
-#all_data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
-#all_data_df <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
-#all_data_df <- subset(all_data_df, select = -c(number)) # removes the number column
-#Reshaped<-melt(data = all_data_df,id=c("chromosome","maker_name","start","stop","prox_left","prox_right","they_are_inside","length","window_size")) # only the values not mentioned, are the ones that turn into the variable and value column
-#TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
 
 #-------------------
 # Proximity
+  
+  directory = setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/CAMDATA/")
+  all_data <- list.files(path=directory, pattern="*density_data.csv") # set the path to the current wd, and then grab all files with the cleaned name
+  all_data_df <- do.call(rbind,lapply(all_data,read.csv))  #put all the data into one dataframe
+  all_data_df <- subset(all_data_df, select = -c(number)) # removes the number column
+  #Reshaped<-melt(data = all_data_df,id=c("chromosome","maker_name","start","stop","prox_left","prox_right","they_are_inside","length","window_size")) # only the values not mentioned, are the ones that turn into the variable and value column
+  #TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
+  
   library(scales)
-  y_limit <- 100000
-  y_step = 10000
+  y_limit <- 8000
+  y_step = 1000
 
-  left_prox_graph <- ggplot(all_data_df, aes(x=prox_left)) +geom_histogram(binwidth=100,color='black',fill='white') +
+  left_prox_graph <- ggplot(all_data_df[all_data_df$window_size==10000,], aes(x=prox_left)) +geom_histogram(binwidth=100,color='black',fill='white') +
   scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
   scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
-  labs(title='Left Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
+  labs(title='Upstream', x = 'BP Away to Closest TE', y = 'Number of Genes')
   print(left_prox_graph)
 
-  right_prox_graph <- ggplot(all_data_df, aes(x=prox_right)) +geom_histogram(binwidth=100,color='black',fill='white') +
+  right_prox_graph <- ggplot(all_data_df[all_data_df$window_size==10000,], aes(x=prox_right)) +geom_histogram(binwidth=100,color='black',fill='white') +
   scale_x_continuous(breaks=seq(0,5000,500),limits = c(0, 5000)) +
   scale_y_continuous(breaks = seq(0,y_limit,y_step),limits=c(0,y_limit),labels=comma) +
-  labs(title='Right Side', x = 'BP Away to Closest TE', y = 'Number of Genes')
+  labs(title='Downstream', x = 'BP Away to Closest TE', y = 'Number of Genes')
   print(right_prox_graph)
    #Aesthetics just tell what the x and y axis should be, coloring and such
    #good habit is to put as much general aesthetics into the main ggplot function
