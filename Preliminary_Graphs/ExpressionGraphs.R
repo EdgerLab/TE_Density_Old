@@ -25,7 +25,7 @@ TE.Density.Means$TE_type<-stri_reverse(TE.Density.Means$TE_type)
 
 # Make colourblind friendly palette :)
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-myColors <- colorRampPalette(cbPalette)(12)
+myColors <- colorRampPalette(cbPalette)(13)
 names(myColors) <- unique(TE.Density.Means$TE_type)
 colScale <- scale_fill_manual(name="", values=myColors)
 
@@ -38,12 +38,12 @@ TE.Density.Means[TE.Density.Means$Location=="left",]$window_size<-TE.Density.Mea
 TE.Density.Means[TE.Density.Means$Location=="intra",]$window_size<-"0"
 
 # Subset to look only at TE types
-TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="LTR"|TE.Density.Means$TE_type=="Unknown",]
+TE.Type.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="DNA"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="LTR"|TE.Density.Means$TE_type=="Unknown"|TE.Density.Means$TE_type=="LTRUnknown",]
 
 #Subset to look only at TE families and rename column to TE_family
 
 # Will need to be renamed in a spot once the LINE fam is added
-TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
+TE.Family.Density.Means<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE_fam"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
 colnames(TE.Family.Density.Means)[2]<-"TE_Family" # LINE fam not none
 
 #============================================================================
@@ -56,73 +56,27 @@ Expression$FPKM_AVG <- rowMeans(Expression[c('FPKM_0','FPKM_1','FPKM_2','FPKM_3'
 GeneExpressionDF<-Expression %>% select(name,TPM_AVG,FPKM_AVG) # make a new data frame with only the TPM and FPKM averages
 colnames(GeneExpressionDF)<-c("maker_name","TPM_AVG","FPKM_AVG") # reset the name column to be maker_name
 
-#TE.TypeExp<-Reshaped %>% filter(variable == "DNA_left"| variable == "DNA_right"| variable == "LINE_left"| variable == "LINE_right"| variable == "LTR_left"|
-                                #variable == "LTR_right"| variable == "Unknown_left"| variable == "Unknown_right")
-
-
-
-
-
-
-
-
-
 
 # Take a subset of Reshaped by a variable
 TE.TypeExp <-Reshaped %>% filter(variable == "LTR_right")
 TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
+TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,] # filter out things with a density above 1
+pdf('right_expression.pdf')
+ggplot(TE.TypeExp,aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)+
+labs(title="Expression", x = "Tranposon Density in a Window", y= "Log(2) TPM", color="Window Size")+
+scale_x_continuous(breaks=seq(0,1))
+dev.off()
 
-#ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
-#graph <- ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
-#ggsave(graph)
-
-# filter out things with a density above 1
-TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,]
-
-
-
-pdf('testimage.pdf')
-ggplot(TE.TypeExp,aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)
+TE.TypeExp2 <-Reshaped %>% filter(variable == "LTR_left")
+TE.TypeExp2 <- TE.TypeExp2 %>%  left_join(GeneExpressionDF, by="maker_name")
+TE.TypeExp2 <- TE.TypeExp2[TE.TypeExp2$value<=1,] # filter out things with a density above 1
+pdf('left_image.pdf')
+ggplot(TE.TypeExp2,aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)+
+labs(title="Expression", x = "Tranposon Density in a Window", y= "Log(2) TPM", color="Window Size")+
+scale_x_continuous(breaks=seq(0,1))
 dev.off()
 
 
 
 
-TE.TypeExp<-Reshaped %>% filter(variable == "LTR_left")
-
-
-TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
-
-#ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
-#graph <- ggplot(TE.TypeExp,aes(x=window_size,y=TPM_AVG),groupby=variable,colour=variable)+geom_point()+facet_wrap(~variable)
-#ggsave(graph)
-
-TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,]
-
-
-
-pdf('testimage2.pdf')
-ggplot(TE.TypeExp,aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)
-dev.off()
-
-
-
-ols_test_bartlett(TE.TypeExp,TPM_AVG,value)
-
-
-
-
-#print(graph)
-
-#Subset to look only at TE families and rename column to TE_family
-
-# Will need to be renamed in a spot once the LINE fam is added
-#TE.FamilyExp<-TE.Density.Means[TE.Density.Means$TE_type=="Unknown_fam"|TE.Density.Means$TE_type=="PIF_Harbinger"|TE.Density.Means$TE_type=="LINE"|TE.Density.Means$TE_type=="MULE"|TE.Density.Means$TE_type=="Copia"|TE.Density.Means$TE_type=="Gypsy"|TE.Density.Means$TE_type=="hAT"|TE.Density.Means$TE_type=="CMC_EnSpm",]
-
-
-
-
-#==============================================
-# Write the data
-#write.csv(Reshaped,'data.csv')
 
