@@ -13,3 +13,7 @@ If you are adapting this code for your own use there are several things you will
 3. There can be cases where a TE completely encompasses a gene from left to right, this is most likely an artifact of the TE annotation software, to deal with this, I do not add the TE values to the current density, and I output it to an overlap file so we can look at it later. Unfortunately I have hardcoded in the naming scheme for the overlap file. If you want to edit this you need to make sure the list matches with the *gtf\_inputfile* argument in **get\_densities**.
 
 4. **separator.sh** needs to be edited to have the correct order of chromosomes as they appear in your gene and mRNA.bed files. Just make sure the chromosome sequence is right.
+
+5. I make use of the multiprocessing library in Python to run each chromosome on its own processor in order to speed things up. The pre-algorithm preparation doesn't take very long by itself (10-20 seconds) but I run that prior to starting the main density algorithm for each chromosome just for simplicity's sake.
+
+6. It may be useful in the future to edit out the hard-coded class attribute assignments towards the end of the density algorithm in order to make it more friendly. When I have the free time I will update it to use the setattr() function.
