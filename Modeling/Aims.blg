@@ -1,5 +1,0 @@
-[0] Config.pm:302> INFO - This is Biber 2.11
-[0] Config.pm:305> INFO - Logfile is 'Aims.blg'
-[21] biber:313> INFO - === Thu Jul 19, 2018, 13:16:28
-[37] Biber.pm:371> INFO - Reading 'Aims.bcf'
-[80] Utils.pm:193> WARN - No data sources defined!
