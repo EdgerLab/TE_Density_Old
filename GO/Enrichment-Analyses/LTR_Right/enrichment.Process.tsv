@@ -1,0 +1,2 @@
+#pathway ID	pathway description	observed gene count	false discovery rate	matching proteins in your network (IDs)	matching proteins in your network (labels)
+GO.0005992	trehalose biosynthetic process	4	0.0389	AT1G23870.1,AT1G60140.1,AT1G70290.1,AT2G18700.1	At1g60140,TPS11,TPS8,TPS9

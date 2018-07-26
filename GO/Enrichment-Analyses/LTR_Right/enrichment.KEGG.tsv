@@ -1,0 +1,2 @@
+#pathway ID	pathway description	observed gene count	false discovery rate	matching proteins in your network (IDs)	matching proteins in your network (labels)
+00500	Starch and sucrose metabolism	7	0.0468	AT1G02810.1,AT1G23870.1,AT1G60140.1,AT1G70290.1,AT2G18700.1,AT3G15720.1,AT5G09730.1	AT1G02810,AT3G15720,At1g60140,BXL3,TPS11,TPS8,TPS9

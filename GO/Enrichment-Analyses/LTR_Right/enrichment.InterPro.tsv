@@ -1,0 +1,4 @@
+#pathway ID	pathway description	observed gene count	false discovery rate	matching proteins in your network (IDs)	matching proteins in your network (labels)
+IPR001830	Glycosyl transferase, family 20	3	0.00985	AT1G23870.1,AT1G60140.1,AT1G70290.1	At1g60140,TPS8,TPS9
+IPR003337	Trehalose-phosphatase	3	0.00985	AT1G23870.1,AT1G60140.1,AT1G70290.1	At1g60140,TPS8,TPS9
+IPR006379	HAD-superfamily hydrolase, subfamily IIB	3	0.00985	AT1G23870.1,AT1G60140.1,AT1G70290.1	At1g60140,TPS8,TPS9
