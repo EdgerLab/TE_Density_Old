@@ -7,15 +7,12 @@ import csv
 #------------------------------------------------------------------
 
 def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
-
-    #file_list = ['gtf_chunks_aa.gtf','gtf_chunks_ab.gtf','gtf_chunks_ac.gtf','gtf_chunks_ad.gtf','gtf_chunks_ae.gtf','gtf_chunks_af.gtf']
     file_list = ['xx00','xx01','xx02','xx03','xx04','xx05','xx06']
 
     for item in file_list:
         if gtf_inputfile == item:
             #item = item[:-3]
             overlaps  = 'overlaps_' + item + '.csv'
-
     try:
         os.remove(overlaps)
     except FileNotFoundError:
