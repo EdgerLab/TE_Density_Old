@@ -1,26 +1,21 @@
 # By Scott Teresi
 #----------------------------------------------------------
-from genic_elements import Genic_Element, TE, Gene
+
+from Genic_Elements import Genic_Element, TE, Gene
 import re
 from collections import deque # I am going to implement a deque so that I can efficiently add TEs to my data set.
     # It won't be much use for lookup, not any better than a list, but it is good for constructing the set.
-from density_algorithm import *
+from Density_Algorithm import *
 import csv
 import time
 import os
-#import multiprocessing
 from multiprocessing import Process
-#import multiprocessing
 
 #----------------------------------------------------------
-gff_inputfile = 'camarosa_gff_data.gff'
-#gtf_inputfile = 'camarosa_gtf_data.gtf'
-#gene_inputfile = 'mRNA.bed'
-#genes_renamed = 'Fxa_chr_rename.txt'
 transposons = deque()
 genes = deque()
 #----------------------------------------------------------
-def te_handler():
+def te_handler(gff_inputfile):
     # One important caveat, I don't think I am grabbing the '1' class, of which there are 27 occurences, check with Pat.
     with open(gff_inputfile, 'r') as f_in:
         number = 1
@@ -80,67 +75,96 @@ def whitelist_fam(family):
     return family
 
 def gene_handler(mRNA_inputfile):
-    """gene_handler() adds the genes into the 'genes' deque. Important to note that exon lengths come from elsewhere."""
-    # This will have every gene because it is coming from the mRNA.bed file which has everything.
-    # Oh so the problem is that some of the gene elements don't have a length. Because there is a mismatch
-    # mismatch between the mRNA and the gtf partitions
-
-    number = 1
-    with open(mRNA_inputfile, 'r') as f_in:
-        for row in f_in:
-            row = re.split('\t+', row)
-            chromosome = str(row[0])
-            start = row[1]
-            stop = row[2]
-            maker_name = row[3].strip('\n')
-            genes.append(Gene(number,chromosome,start,stop,maker_name))
-            number +=1
+   """gene_handler() adds the genes into the 'genes' deque. Important to note that exon lengths come from elsewhere."""
+   number = 1
+   with open(mRNA_inputfile, 'r') as f_in:
+      for row in f_in:
+         row = re.split('\t+', row)
+         chromosome = str(row[0])
+         if chromosome[:6] == "contig":
+            continue
+         start = row[1]
+         stop = row[2]
+         maker_name = row[3].strip('\n')
+         genes.append(Gene(number,chromosome,start,stop,maker_name))
+         number +=1
 
 def gene_handler_2(gtf_inputfile):
-    a_dict = {}
-    with open(gtf_inputfile,'r') as f_in:
-        for row in f_in:
-            row = re.split('\t+',row)
-            exon_length = int(row[4]) - int(row[3]) + 1
-            classification = str(row[2])
-            constructor = str(row[1])
-            if classification == 'exon' and constructor == 'maker':
-                gene = re.split('ID=|-mRNA',row[8])
-                key = gene[1]
+    """Gives us the exon lengths for each gene"""
+    if selection == H4:
+        a_dict = {}
+        with open(gtf_inputfile,'r') as f_in:
+            for row in f_in:
+                row = re.split('\t+',row)
+                exon_length = int(row[4]) - int(row[3]) + 1
+                chromosome = str(row[0])
+                classification = str(row[2])
+                constructor = str(row[1])
 
-                if key not in a_dict:
-                    a_dict[key] = exon_length
-                elif key in a_dict:
-                    a_dict[key] += exon_length
-                else:
-                    raise ValueError("I don't know")
-    for elem in genes:
-        try:
-            name = elem.getMaker_Name()
-            length = int(a_dict[name])
-            elem.length = length
-        except KeyError:
-            continue
+                if chromosome[:6] == "contig" or chromosome[:3] != "Fvb":
+                    continue
+
+                if classification == 'exon' and constructor == 'maker':
+                    gene = re.split('ID=|-mRNA',row[8])
+                    key = gene[1].split(":")[0]
+
+                    if key not in a_dict:
+                        a_dict[key] = exon_length
+                    elif key in a_dict:
+                        a_dict[key] += exon_length
+
+        for elem in genes:
+            try:
+                name = elem.getMaker_Name()
+                length = int(a_dict[name])
+                elem.length = length
+            except KeyError:
+                raise KeyError
+
+    if selection == Camarosa:
+        a_dict = {}
+        with open(gtf_inputfile,'r') as f_in:
+            for row in f_in:
+                row = re.split('\t+',row)
+                exon_length = int(row[4]) - int(row[3]) + 1
+                chromosome = str(row[0])
+                classification = str(row[2])
+                constructor = str(row[1])
+
+                if chromosome[:6] == "contig" or chromosome[:3] != "Fvb":
+                    continue
+
+                if classification == 'exon' and constructor == 'maker':
+                    gene = re.split('ID=|-mRNA',row[8])
+                    key = gene[1]
+
+                    if key not in a_dict:
+                        a_dict[key] = exon_length
+                    elif key in a_dict:
+                        a_dict[key] += exon_length
+
+        for elem in genes:
+            try:
+                name = elem.getMaker_Name()
+                length = int(a_dict[name])
+                elem.length = length
+            except KeyError:
+                raise KeyError
 
 def info():
-    #print('module name:', __name__)
     print('Started algorithm')
     print('parent process:', os.getppid())
     print('process id:', os.getpid())
     print()
 
-def run_all(gtf_inputfile,mRNA_inputfile):
-    te_handler()
+def run_all(gff_inputfile, mRNA_inputfile, gtf_inputfile, file_list):
+    te_handler(gff_inputfile)
     gene_handler(mRNA_inputfile)
     gene_handler_2(gtf_inputfile)
 
-    #if gtf_inputfile == 'xx02':
-        #for elem in genes:
-            #print(elem.__dict__)
-            #print(elem.length)
     info()
     #stats()
-    get_densities(genes,transposons,500,500,10000,gtf_inputfile)
+    get_densities(genes,transposons,500,500,10000,gtf_inputfile,file_list)
 
 #---------------------------------------------------------
 def stats():
@@ -168,11 +192,28 @@ def stats():
 
 
 if __name__ == '__main__':
-    my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],
-                ['xx06','mRNA06']]
+    H4 = 1
+    Camarosa = 2
+
+    selection = Camarosa ### THIS IS THE LINE TO MAKE YOUR SELECTION
+
+    if selection == H4:
+        print("Running H4")
+        my_inputs = [['gtf00','mRNA00'],['gtf01','mRNA01'],['gtf02','mRNA02'],['gtf03','mRNA03'],['gtf04','mRNA04'],['gtf05','mRNA05'],['gtf06','mRNA06']]
+        gff_inputfile = 'H4_TEs.gff'
+
+    if selection == Camarosa:
+        print("Running Camarosa")
+        my_inputs = [['xx00','mRNA00'],['xx01','mRNA01'],['xx02','mRNA02'],['xx03','mRNA03'],['xx04','mRNA04'],['xx05','mRNA05'],['xx06','mRNA06']]
+        gff_inputfile = 'camarosa_gff_data.gff'
+
+    file_list = []
+    for item in my_inputs:
+        file_list.append(item[0])
+
     p_list = []
     for f_name in my_inputs:
-        p = Process(target=run_all, args=(f_name[0],f_name[1],))
+        p = Process(target=run_all, args=(gff_inputfile, f_name[1], f_name[0], file_list,))
         p.start()
         p_list.append(p)
 

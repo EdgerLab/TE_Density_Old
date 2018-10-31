@@ -1,13 +1,12 @@
 # By Scott teresi
 #------------------------------------------------------------------
-from genic_elements import *
+from Genic_Elements import *
 from collections import deque, defaultdict
 import os
 import csv
 #------------------------------------------------------------------
 
-def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
-    file_list = ['xx00','xx01','xx02','xx03','xx04','xx05','xx06']
+def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile,file_list):
 
     for item in file_list:
         if gtf_inputfile == item:
@@ -268,6 +267,7 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile):
 
 
         reset(genes)
+
 #===============================================
 # Reset the Deque for the next window
 #===============================================
