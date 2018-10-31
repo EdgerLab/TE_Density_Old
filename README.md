@@ -15,3 +15,10 @@ If you are adapting this code for your own use there are several things you will
 4. I make use of the multiprocessing library in Python to run each chromosome on its own processor in order to speed things up. The pre-algorithm preparation doesn't take very long by itself (10-20 seconds) but I run that prior to starting the main density algorithm for each chromosome just for simplicity's sake.
 
 5. It may be useful in the future to edit out the hard-coded class attribute assignments towards the end of the density algorithm in order to make it more friendly. When I have the free time I will update it to use the setattr() function.
+
+6. 10/31/2018: I archived the H4 project. I have done this because I have
+   consolidated the code so that it may run on both without needing to maintain
+separate versions of the code. Right now it runs on Camarosa, but to configure
+it for H4, you just need to make the selection at the bottom of
+Density_Expression. You still need the appropriate mRNA files, gtf files, and
+the gff of transposons.
