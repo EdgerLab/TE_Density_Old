@@ -22,3 +22,6 @@ separate versions of the code. Right now it runs on Camarosa, but to configure
 it for H4, you just need to make the selection at the bottom of
 Density_Expression. You still need the appropriate mRNA files, gtf files, and
 the gff of transposons.
+
+7. To get up and running, unzip the TE_Bank, mRNA_Bank, and Gene_Bank to get
+   all the requisite starting files.
