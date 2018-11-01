@@ -24,4 +24,5 @@ Density_Expression. You still need the appropriate mRNA files, gtf files, and
 the gff of transposons.
 
 7. To get up and running, unzip the TE_Bank, mRNA_Bank, and Gene_Bank to get
-   all the requisite starting files.
+   all the requisite starting files. To run everything, run
+Density_Expression.py
