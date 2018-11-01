@@ -6,7 +6,15 @@ import os
 import csv
 #------------------------------------------------------------------
 
-def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile,file_list):
+def get_densities(
+    genes,
+    transposons,
+    window,
+    increment,
+    max_window,
+    gtf_inputfile,
+    file_list,
+    status_queue):
 
     for item in file_list:
         if gtf_inputfile == item:
@@ -30,7 +38,10 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile,fi
         if elem.getTe_Type() not in dict_type_list:
             dict_type_list.append(elem.getTe_Type())
 
+    counter = 0
+    counter_max = max_window - window
     while window <= max_window:
+        status_queue.put((1.0 * counter / counter_max, os.getpid()))
         for elem in genes:
             g_start = elem.getStart()
             g_stop = elem.getStop()
@@ -262,6 +273,8 @@ def get_densities(genes,transposons,window,increment,max_window,gtf_inputfile,fi
                         elem.window_size = window # update the attribute of window sie to be the current window just before you write
                         f_out.writerow(elem.__dict__) # elem.__dict__ is how we access all of the attributes of an instance
         window += increment
+        counter += 1
+        status_queue.put((1.0 * counter / counter_max, os.getpid()))
 
 
 
