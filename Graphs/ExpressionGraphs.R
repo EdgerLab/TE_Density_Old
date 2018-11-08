@@ -36,7 +36,8 @@ rm(TE_Data) # remove TE_Data because we need the RAM
 # Remove the 0s from the data frame
 Reshaped <- Reshaped[Reshaped$value!=0,]
 
-Reshaped$value <- Reshaped$value/2
+#Reshaped$value <- Reshaped$value/2 # stop dividng my two
+Reshaped = Reshaped[Reshaped$value<=1,]
 
 #TE.Density.Means<-Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
 #Reshaped2 <- Reshaped %>% group_by(variable,window_size) %>% summarise(avg=mean(value)/2) %>% arrange(avg)
@@ -156,6 +157,7 @@ dev.off()
 TE.TypeExp <-Reshaped %>% filter(variable == "LTR_left")
 TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
 TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,] # filter out things with a density above 1
+#TE.TypeExp <- TE.TypeExp[TE.TypeExp$TPM_AVG>=0.1,] # filter out things with an expression < 0.1
 pdf('LTR_left_window.pdf')
 ggplot(TE.TypeExp[TE.TypeExp$window_size==1000,],aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_point(position='jitter')+geom_smooth(method='auto')+facet_wrap(~window_size)+
 labs(title="LTR Tranposon Density Upstream", x = "Tranposon Density in a Window", y= "Gene Expression (Log(2) TPM)", color="Window Size")+
@@ -167,8 +169,9 @@ dev.off()
 TE.TypeExp <-Reshaped %>% filter(variable == "LTR_right")
 TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
 TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,] # filter out things with a density above 1
+#TE.TypeExp <- TE.TypeExp[TE.TypeExp$TPM_AVG>=0.1,] # filter out things with an expression < 0.1
 pdf('LTR_right_window.pdf')
-ggplot(TE.TypeExp[TE.TypeExp$window_size==1000,],aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)+
+ggplot(TE.TypeExp[TE.TypeExp$window_size==1000,],aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_point(position='jitter')+geom_smooth(method='auto')+facet_wrap(~window_size)+
 labs(title="LTR Transposon Density Downstream", x = "Tranposon Density in a Window", y= "Gene Expression (Log(2) TPM)", color="Window Size")+
 scale_x_continuous(breaks=seq(0,1))
 #scale_y_continuous(limits=c(-39,-43))
@@ -177,8 +180,9 @@ dev.off()
 TE.TypeExp <-Reshaped %>% filter(variable == "LTRAVG")
 TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
 TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,] # filter out things with a density above 1
+#TE.TypeExp <- TE.TypeExp[TE.TypeExp$TPM_AVG>=0.1,] # filter out things with an expression < 0.1
 pdf('LTRAVG_window.pdf')
-ggplot(TE.TypeExp[TE.TypeExp$window_size==1000,],aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)+
+ggplot(TE.TypeExp[TE.TypeExp$window_size==1000,],aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_point(position='jitter')+geom_smooth(method='auto')+facet_wrap(~window_size)+
 labs(title="Average LTR Transposon Density (Upstream and Downstream)", x = "Tranposon Density in a Window", y= "Gene Expression (Log(2) TPM)", color="Window Size")+
 scale_x_continuous(breaks=seq(0,1))
 #ylim(-39,-43)
