@@ -73,6 +73,7 @@ Reshaped$value <- Reshaped$value/2
 #colnames(TE.Family.Density.Means)[2]<-"TE_Family" # LINE fam not none
 
 #============================================================================
+setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/test_graphs/") # specify the file path
 
 
 Expression <- read.csv('expression_out.csv', header=TRUE, sep=",") # read the expression csv
@@ -82,7 +83,7 @@ GeneExpressionDF<-Expression %>% select(name,TPM_AVG,FPKM_AVG) # make a new data
 colnames(GeneExpressionDF)<-c("maker_name","TPM_AVG","FPKM_AVG") # reset the name column to be maker_name
 
 
-setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/test_graphs/") # specify the file path
+#setwd("/home/scott/Documents/Uni/Research/transposon_2.0/Camarosa_TE/Expression/test_graphs/") # specify the file path
 
 # Take a subset of Reshaped by a variable
 TE.TypeExp <-Reshaped %>% filter(variable == "LTR_left")
@@ -156,9 +157,9 @@ TE.TypeExp <-Reshaped %>% filter(variable == "LTR_left")
 TE.TypeExp <- TE.TypeExp %>%  left_join(GeneExpressionDF, by="maker_name")
 TE.TypeExp <- TE.TypeExp[TE.TypeExp$value<=1,] # filter out things with a density above 1
 pdf('LTR_left_window.pdf')
-ggplot(TE.TypeExp[TE.TypeExp$window_size==1000,],aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_smooth(method='auto')+facet_wrap(~window_size)+
+ggplot(TE.TypeExp[TE.TypeExp$window_size==1000,],aes(x=value,y=log2(TPM_AVG),color=as.character(window_size)))+geom_point(position='jitter')+geom_smooth(method='auto')+facet_wrap(~window_size)+
 labs(title="LTR Tranposon Density Upstream", x = "Tranposon Density in a Window", y= "Gene Expression (Log(2) TPM)", color="Window Size")+
-scale_x_continuous(breaks=seq(0,1)) 
+scale_x_continuous(breaks=seq(0,1))
 #scale_y_continuous(limits=c(-39,-43))
 dev.off()
 
