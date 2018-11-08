@@ -10,6 +10,14 @@ import csv
 import time
 import os
 from multiprocessing import Process
+import multiprocessing
+from threading import Thread
+import logging
+from collections import defaultdict
+import sys
+
+# SEE https://docs.python.org/3/howto/logging.html#logging-from-multiple-modules
+logger = logging.getLogger(__name__)
 
 #----------------------------------------------------------
 transposons = deque()
@@ -157,14 +165,39 @@ def info():
     print('process id:', os.getpid())
     print()
 
-def run_all(gff_inputfile, mRNA_inputfile, gtf_inputfile, file_list):
+def show_status(status_queue):
+    """Print to screen the percent completion of each response."""
+
+    time.sleep(10)  # MAGIC NUMBER wait for printouts from the process start
+    status_map = defaultdict(tuple)
+    while True:  # MAGIC NUMBER make sure to use a daemon if no kill event
+        response = status_queue.get(block=True)
+        try:
+            percent, my_id = response
+        except ValueError as ve:
+            msg = ("show_status expecting 3 values in response but got {}"
+                   .format(response))
+            logger.debug(msg)
+            continue
+        # yrt
+        status_map[str(my_id)] = percent
+        status = "percent complete: "
+        for id, complete in status_map.items():
+            status += id + ": {:.2f}".format(complete) + ",  "
+        # rof
+        sys.stdout.write('\r')
+        sys.stdout.write(status)
+        sys.stdout.flush()  # TODO use a progressbar, like tqdm, instead
+    # elihw
+
+def run_all(gff_inputfile, mRNA_inputfile, gtf_inputfile, file_list, status_queue):
     te_handler(gff_inputfile)
     gene_handler(mRNA_inputfile)
     gene_handler_2(gtf_inputfile)
 
     info()
     #stats()
-    get_densities(genes,transposons,500,500,10000,gtf_inputfile,file_list)
+    get_densities(genes,transposons,500,500,10000,gtf_inputfile,file_list,status_queue)
 
 #---------------------------------------------------------
 def stats():
@@ -211,11 +244,17 @@ if __name__ == '__main__':
     for item in my_inputs:
         file_list.append(item[0])
 
+    status_queue = multiprocessing.Queue()
+    status_thread = Thread(target=show_status, args=(status_queue,))
+    status_thread.daemon = True
+
     p_list = []
     for f_name in my_inputs:
-        p = Process(target=run_all, args=(gff_inputfile, f_name[1], f_name[0], file_list,))
+        p = Process(target=run_all, args=(gff_inputfile, f_name[1], f_name[0], file_list, status_queue))
         p.start()
         p_list.append(p)
+
+    status_thread.start()
 
     for p in p_list:
         current_pid = p.pid
