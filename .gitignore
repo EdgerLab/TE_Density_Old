@@ -5,3 +5,5 @@
 xx*
 mRNA*
 ERR*
+**.pyc
+__pycache__
