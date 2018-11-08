@@ -7,4 +7,10 @@ mRNA*
 ERR*
 **.pyc
 overlaps**
+CAMDATA/*
+camarosa_gff_data.gff
+Expression/test_graphs/*
+Expression/expression_out.csv
+Expression/camarosa_gtf_data.gtf
+Expression/TE_Data.csv
 __pycache__
