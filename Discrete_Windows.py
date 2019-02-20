@@ -19,13 +19,14 @@ def set_up(file_name1, file_name2):
     df1=pd.read_csv(file_name1, sep=',', delimiter = None, header='infer', engine='python') # read the data
     df2=pd.read_csv(file_name2, sep=',', delimiter = None, header='infer', engine='python')
 
-    if df1_length != df2_length: # value check to makemsure PandaFrames are the same length. This is expected
-        raise ValueError
 
     df1.replace('', np.NaN) # for objects that have no value, replace with NULL value in the PandaFrame
     df2.replace('', np.NaN)
     df1_length = len(df1.index) # get length for later iteration
     df2_length = len(df2.index)
+
+    if df1_length != df2_length: # value check to makemsure PandaFrames are the same length. This is expected
+        raise ValueError
 
     TEs = list(df1) # generate fieldnames list from PandaFrame
     list_to_remove = ['maker_name','chromosome','start','stop','length','prox_left','prox_right','they_are_inside','number','window_size']
@@ -64,6 +65,11 @@ def set_up(file_name1, file_name2):
 
     # TO DO
         # drop the unneccessary columns since I only want the discrete jumps, to save space and RAM when computing
+    #list_to_remove_2 = list_to_remove.remove('maker_name')
+#['maker_name','chromosome','start','stop','length','prox_left','prox_right','they_are_inside','number','window_size']
+
+    #df1.drop(columns = ['chromosome','start','stop','length','prox_left','prox_right','they_are_inside','number','window_size'])
+    #df2.drop(columns = ['chromosome','start','stop','length','prox_left','prox_right','they_are_inside','number','window_size'])
 
     df1.to_csv('Discrete_' + file_name1) # write the PandaFrames to a csv
     df2.to_csv('Discrete_' + file_name2)
@@ -94,7 +100,7 @@ def show_status(status_queue):
 
 def run_all():
     os.chdir('CAMDATA')
-    my_inputs = ['xx00','xx01']#,'xx02','xx03','xx04','xx05','xx06'] # determine the chromosome headings of files to loop over
+    my_inputs = ['xx00','xx01','xx02','xx03','xx04','xx05','xx06'] # determine the chromosome headings of files to loop over
     count = 500 # the jump in windows of the file scheme
     my_dict = {}
 
